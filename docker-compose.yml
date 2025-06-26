@@ -1,0 +1,51 @@
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  db:
+    image: postgres:16-alpine # Usamos uma imagem leve do PostgreSQL
+    restart: always
+    environment:
+      POSTGRES_DB: seu_banco_de_dados # Nome do seu banco de dados
+      POSTGRES_USER: seu_usuario # Usuário do banco de dados
+      POSTGRES_PASSWORD: sua_senha # Senha do banco de dados
+    ports:
+      - "5432:5432" # Mapeia a porta 5432 do contêiner para a porta 5432 da sua máquina
+    volumes:
+      - db_data:/var/lib/postgresql/data # Volume persistente para os dados do banco de dados
+
+  # Serviço do n8n (Automação/Orquestração)
+  n8n:
+    image: n8nio/n8n:latest # <-- CORREÇÃO AQUI
+    restart: always
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      N8N_BASIC_AUTH_ACTIVE: "false"
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n:/home/node/n8n
+
+  # Serviço do Backend (NestJS)
+  backend:
+    build:
+      context: ./backend # Onde o Docker vai encontrar o Dockerfile para construir a imagem do backend
+      dockerfile: Dockerfile # O nome do Dockerfile
+    restart: always
+    environment:
+      DATABASE_URL: postgres://seu_usuario:sua_senha@db:5432/seu_banco_de_dados # URL de conexão com o banco de dados (o hostname é 'db', o nome do serviço)
+      N8N_WEBHOOK_URL: http://n8n:5678/webhook/ # URL para o n8n dentro da rede Docker
+    ports:
+      - "3001:3001" # Mapeia a porta 3001 do contêiner para a porta 3001 da sua máquina (onde o NestJS rodará)
+    volumes:
+      - ./backend:/app # Mapeia o código-fonte local para dentro do contêiner para hot-reloading
+      - /app/node_modules # Evita que o node_modules local sobrescreva o do contêiner
+    depends_on:
+      - db # Garante que o banco de dados inicie antes do backend
+      - n8n # Garante que o n8n inicie antes do backend (se houver dependência inicial)
+
+# Volumes para persistir dados
+volumes:
+  db_data:
+  n8n_data:
