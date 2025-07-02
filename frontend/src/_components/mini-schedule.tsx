@@ -3,7 +3,7 @@ import { Progress } from "./ui/progress";
 
 const MiniSchedule = () => {
   return (
-    <div className="w-full h-44 px-6 flex flex-col gap-2 mt-4">
+    <div className="w-full h-44 px-6 flex flex-col gap-2">
       <div className="w-full h-full border border-primary rounded-md p-4 flex flex-col gap-2 justify-between">
         <div className="w-full  flex items-center justify-between">
           <h2 className="text-lg">TJ-PR</h2>
