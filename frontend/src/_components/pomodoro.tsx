@@ -49,7 +49,7 @@ const PomodoroTimer = () => {
             toast.success("Tempo de descanso concluído! Hora de estudar.");
           }
         }
-      }, 10);
+      }, 1000);
     } else if (!isActive && (minutes !== 0 || seconds !== 0)) {
       if (intervalo) clearInterval(intervalo!);
     }
@@ -75,7 +75,7 @@ const PomodoroTimer = () => {
             onCheckedChange={(checked) => {
               setModo(checked ? "break" : "study");
             }}
-            className="rotate-90"
+            className="rotate-90  data-[state=unchecked]:bg-green-500 data-[state=checked]:bg-[#FF9800]"
           />
           <Label className="text-2xl font-bold cursor-pointer" htmlFor="modo">
             {modo === "study" ? "Modo Estudo" : "Modo Descanso"}
