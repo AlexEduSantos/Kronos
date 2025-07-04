@@ -66,7 +66,11 @@ const PomodoroTimer = () => {
 
   return (
     <div className="w-full overflow-hidden px-6">
-      <div className="w-full rounded-md bg-primary text-primary-foreground p-2 flex items-center justify-between gap-2">
+      <div
+        className={`w-full rounded-md text-primary-foreground p-2 flex items-center justify-between gap-2 ${
+          modo === "study" ? "bg-green-600" : "bg-orange-400"
+        }`}
+      >
         <div className="flex items-center gap-2">
           <Switch
             id="modo"
@@ -75,7 +79,7 @@ const PomodoroTimer = () => {
             onCheckedChange={(checked) => {
               setModo(checked ? "break" : "study");
             }}
-            className="rotate-90  data-[state=unchecked]:bg-green-500 data-[state=checked]:bg-[#FF9800]"
+            className="rotate-90  data-[state=unchecked]:bg-primary data-[state=checked]:bg-primary"
           />
           <Label className="text-xl font-bold cursor-pointer" htmlFor="modo">
             {modo === "study" ? "Modo Estudo" : "Modo Descanso"}
@@ -117,31 +121,36 @@ const PomodoroTimer = () => {
             </Button>
           </div>
           <div className="relative w-[100px] h-[100px]">
-            <svg className={`absolute top-0 left-0 rotate-270`} width="100" height="100">
+            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-2xl font-bold">
+              {`${minutes}`.padStart(2, "0")}:{`${seconds}`.padStart(2, "0")}
+            </div>
+            <svg
+              className={`absolute top-0 left-0 rotate-270`}
+              width="100"
+              height="100"
+            >
               <circle
                 cx="50"
                 cy="50"
                 r="45"
-                stroke="#444"
-                strokeWidth="4"
+                stroke="#000"
+                strokeWidth="1"
                 fill="none"
+                opacity={0.3}
               />
               <circle
                 cx="50"
                 cy="50"
                 r="45"
-                stroke={modo === "study" ? "#4ade80" : "#FF9800"}
+                stroke="#fff"
                 strokeLinecap="round"
-                strokeWidth="4"
+                strokeWidth="6"
                 fill="none"
                 strokeDasharray={2 * Math.PI * 45}
                 strokeDashoffset={(1 - progress) * 2 * Math.PI * 45}
                 style={{ transition: "stroke-dashoffset 1s linear" }}
               />
             </svg>
-            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-2xl font-bold">
-              {`${minutes}`.padStart(2, "0")}:{`${seconds}`.padStart(2, "0")}
-            </div>
           </div>
         </div>
       </div>
