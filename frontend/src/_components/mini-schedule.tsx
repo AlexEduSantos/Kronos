@@ -4,12 +4,12 @@ import { Progress } from "./ui/progress";
 const MiniSchedule = () => {
   return (
     <div className="w-full h-44 px-6 flex flex-col gap-2">
-      <div className="w-full h-full border border-primary rounded-md p-4 flex flex-col gap-2 justify-between">
+      <div className="w-full h-full border border-primary rounded-md p-4 flex flex-col gap-2 justify-between bg-primary text-primary-foreground">
         <div className="w-full  flex items-center justify-between">
           <h2 className="text-lg">TJ-PR</h2>
           <Button
             variant={"secondary"}
-            className="rounded-full h-8 px-4 text-xs"
+            className="h-8 px-4 text-xs"
           >
             Editar
           </Button>
@@ -19,7 +19,10 @@ const MiniSchedule = () => {
             <p>Progresso</p>
             <small>50%</small>
           </div>
-          <Progress value={50} className="w-full " />
+          <Progress
+            value={50}
+            className=""
+          />
         </div>
         <div className="w-full flex gap-2">
           <h2 className="font-semibold">Data da prova:</h2>
