@@ -1,3 +1,4 @@
+import Daile from "@/_components/daile";
 import Header from "@/_components/header";
 import Hello from "@/_components/hello";
 import MiniSchedule from "@/_components/mini-schedule";
@@ -11,6 +12,7 @@ export default function Home() {
         <Hello />
         <MiniSchedule />
         <PomodoroTimer />
+        <Daile />
       </div>
     </main>
   );
