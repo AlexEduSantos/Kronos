@@ -65,8 +65,8 @@ const PomodoroTimer = () => {
   const progress = 1 - currentTime / totalTime;
 
   return (
-    <div className="w-full px-6">
-      <div className="w-full rounded-md bg-primary text-primary-foreground p-2 flex items-center justify-between">
+    <div className="w-full overflow-hidden px-6">
+      <div className="w-full rounded-md bg-primary text-primary-foreground p-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Switch
             id="modo"
@@ -77,7 +77,7 @@ const PomodoroTimer = () => {
             }}
             className="rotate-90  data-[state=unchecked]:bg-green-500 data-[state=checked]:bg-[#FF9800]"
           />
-          <Label className="text-2xl font-bold cursor-pointer" htmlFor="modo">
+          <Label className="text-xl font-bold cursor-pointer" htmlFor="modo">
             {modo === "study" ? "Modo Estudo" : "Modo Descanso"}
           </Label>
         </div>
