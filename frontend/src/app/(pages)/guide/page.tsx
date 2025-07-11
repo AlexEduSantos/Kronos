@@ -1,10 +1,18 @@
 import { Button } from "@/_components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 const Guide = () => {
   return (
     <div className="flex flex-col items-center justify-around h-screen text-secondary py-12">
-      <Image src="/guide.png" alt="Guide Image" width={300} height={300} />
+      <div className="relative w-full aspect-square ">
+        <Image
+          src="/guide.png"
+          alt="Guide Image"
+          fill
+          className="object-contain"
+        />
+      </div>
       <div className="w-full flex flex-col items-center">
         <h2 className="text-2xl text-center">
           Olá, <strong>Usuário.</strong>
@@ -14,7 +22,9 @@ const Guide = () => {
           juntos!
         </p>
       </div>
-      <Button className="text-lg w-2/4">Cadastrar</Button>
+      <Link href="/guide/new-schedule" className="w-full flex justify-center">
+        <Button className="text-lg w-2/4 h-12 font-bold">Cadastrar</Button>
+      </Link>
     </div>
   );
 };
