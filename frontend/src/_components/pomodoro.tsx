@@ -65,93 +65,89 @@ const PomodoroTimer = () => {
   const progress = 1 - currentTime / totalTime;
 
   return (
-    <div className="w-full overflow-hidden px-6">
-      <div
-        className={`w-full rounded-md text-primary-foreground p-2 flex items-center justify-between gap-2 ${
-          modo === "study" ? "bg-green-600" : "bg-orange-400"
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          <Switch
-            id="modo"
-            aria-label="Modo Pomodoro"
-            checked={modo === "break"}
-            onCheckedChange={(checked) => {
-              setModo(checked ? "break" : "study");
+    <div
+      className={`w-full rounded-md p-2 flex items-center justify-between gap-2 bg-primary text-primary-foreground`}
+    >
+      <div className="flex items-center gap-2">
+        <Switch
+          id="modo"
+          aria-label="Modo Pomodoro"
+          checked={modo === "break"}
+          onCheckedChange={(checked) => {
+            setModo(checked ? "break" : "study");
+          }}
+          className="rotate-90 data-[state=unchecked]:bg-white data-[state=checked]:bg-secondary"
+        />
+        <Label className="text-xl font-bold cursor-pointer" htmlFor="modo">
+          {modo === "study" ? "Modo Estudo" : "Modo Descanso"}
+        </Label>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="flex flex-col items-center gap-2">
+          <Button
+            variant={"ghost"}
+            className="w-full min-w-[100px] bg-white "
+            onClick={() => {
+              setIsActive(!isActive);
             }}
-            className="rotate-90  data-[state=unchecked]:bg-primary data-[state=checked]:bg-primary"
-          />
-          <Label className="text-xl font-bold cursor-pointer" htmlFor="modo">
-            {modo === "study" ? "Modo Estudo" : "Modo Descanso"}
-          </Label>
+          >
+            {isActive ? (
+              <div className="flex items-center">
+                <Pause className="w-4 h-4 stroke-0 fill-secondary" />
+                <p className="font-light">Pausar</p>
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <Play className="w-4 h-4 stroke-0 fill-secondary" />
+                <p className="font-light">Iniciar</p>
+              </div>
+            )}
+          </Button>
+          <Button
+            variant={"ghost"}
+            className="w-full bg-white font-light "
+            onClick={() => {
+              setIsActive(false);
+              setModo("study");
+              setMinutes(25);
+              setSeconds(0);
+              toast.info("Timer reiniciado.");
+            }}
+          >
+            Resetar
+          </Button>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col items-center gap-2">
-            <Button
-              variant={"secondary"}
-              className="w-full min-w-[90px]"
-              onClick={() => {
-                setIsActive(!isActive);
-              }}
-            >
-              {isActive ? (
-                <div className="flex items-center ">
-                  <Pause className="w-4 h-4 stroke-0 fill-primary" />
-                  <p>Pausar</p>
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <Play className="w-4 h-4 stroke-0 fill-primary" />
-                  <p>Iniciar</p>
-                </div>
-              )}
-            </Button>
-            <Button
-              variant={"secondary"}
-              className="w-full"
-              onClick={() => {
-                setIsActive(false);
-                setModo("study");
-                setMinutes(25);
-                setSeconds(0);
-                toast.info("Timer reiniciado.");
-              }}
-            >
-              Resetar
-            </Button>
+        <div className="relative w-[100px] h-[100px]">
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-2xl font-bold">
+            {`${minutes}`.padStart(2, "0")}:{`${seconds}`.padStart(2, "0")}
           </div>
-          <div className="relative w-[100px] h-[100px]">
-            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-2xl font-bold">
-              {`${minutes}`.padStart(2, "0")}:{`${seconds}`.padStart(2, "0")}
-            </div>
-            <svg
-              className={`absolute top-0 left-0 rotate-270`}
-              width="100"
-              height="100"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                stroke="#000"
-                strokeWidth="1"
-                fill="none"
-                opacity={0.3}
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                stroke="#fff"
-                strokeLinecap="round"
-                strokeWidth="6"
-                fill="none"
-                strokeDasharray={2 * Math.PI * 45}
-                strokeDashoffset={(1 - progress) * 2 * Math.PI * 45}
-                style={{ transition: "stroke-dashoffset 1s linear" }}
-              />
-            </svg>
-          </div>
+          <svg
+            className={`absolute top-0 left-0 rotate-270`}
+            width="100"
+            height="100"
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r="45"
+              stroke="#000"
+              strokeWidth="1"
+              fill="none"
+              opacity={0.3}
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r="45"
+              stroke="#fff"
+              strokeLinecap="round"
+              strokeWidth="6"
+              fill="none"
+              strokeDasharray={2 * Math.PI * 45}
+              strokeDashoffset={(1 - progress) * 2 * Math.PI * 45}
+              style={{ transition: "stroke-dashoffset 1s linear" }}
+            />
+          </svg>
         </div>
       </div>
     </div>
