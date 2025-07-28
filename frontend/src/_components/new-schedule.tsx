@@ -23,6 +23,7 @@ import {
 import { cn } from "@/_lib/utils";
 import { useNewScheduleViewModel } from "@/_viewmodels/useNewScheduleViewModel";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
+import { Textarea } from "./ui/textarea";
 
 const NewSchedule = () => {
   const {
@@ -146,69 +147,24 @@ const NewSchedule = () => {
             </h2>
             <Separator className="opacity-20 h-0.5 my-1" />
 
-            {disciplines.map((discipline, index) => (
-              <div key={index} className="flex items-end gap-2 mb-2">
-                <FormField
-                  control={form.control}
-                  name={`disciplines.${index}.name`} // Campo dinâmico
-                  render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel className={cn(index > 0 && "sr-only")}>
-                        {index === 0 ? "Nome da Disciplina" : ""}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Ex: Português, Matemática"
-                          className="w-full border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground text-base"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={`disciplines.${index}.weight`} // Campo dinâmico
-                  render={({ field }) => (
-                    <FormItem className="w-24">
-                      <FormLabel className={cn(index > 0 && "sr-only")}>
-                        {index === 0 ? "Peso" : ""}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Peso (0-100)"
-                          className="w-full border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground text-base"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value) || 0)
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeDiscipline(index)}
-                  className="mb-1"
-                >
-                  <Trash2Icon className="h-5 w-5 text-red-500" />
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={addDiscipline}
-              className="mt-2 text-primary"
-            >
-              <PlusIcon className="mr-2 h-4 w-4" /> Adicionar Disciplina
-            </Button>
+            <FormField
+              control={form.control}
+              name="disciplines"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="flex flex-col gap-2">
+                      {field.value.map((discipline, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Textarea {...discipline} className="border border-border/20 text-sm" placeholder="Cole o edital aqui"/>{" "}
+                        </div>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {form.formState.errors.disciplines && (
               <p className="text-sm font-medium text-destructive mt-2">
                 {form.formState.errors.disciplines.message}
