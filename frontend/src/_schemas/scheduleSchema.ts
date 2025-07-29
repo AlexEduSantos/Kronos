@@ -1,12 +1,6 @@
 // src/schemas/scheduleSchema.ts
 import { z } from "zod";
 
-// Define o schema para uma disciplina individual
-const disciplineSchema = z.object({
-  name: z.string().min(1, "Nome da disciplina é obrigatório."),
-  weight: z.number().min(0).max(100, "Peso deve ser entre 0 e 100."),
-});
-
 // Define o schema principal para o formulário de cronograma
 export const scheduleFormSchema = z
   .object({
@@ -17,8 +11,17 @@ export const scheduleFormSchema = z
       })
       .min(new Date(), "A data da prova não pode ser no passado."), // Garante que a data não seja anterior ao dia atual
     disciplines: z
-      .array(disciplineSchema)
-      .min(1, "Adicione pelo menos uma disciplina."),
+      .array(
+        z.object({
+          name: z.string().min(1, "O nome da disciplina é obrigatório."),
+          weight: z
+            .number()
+            .min(0, "O peso deve ser no mínimo 0.")
+            .max(100, "O peso deve ser no máximo 100."),
+        })
+      )
+      .optional(), // Permite que o campo seja opcional, mas se estiver presente, deve ter pelo menos uma disciplina
+    aiInputText: z.string().optional(), // Campo de texto opcional
     selectedWeekdays: z
       .array(z.string())
       .min(1, "Selecione pelo menos um dia de estudo."),

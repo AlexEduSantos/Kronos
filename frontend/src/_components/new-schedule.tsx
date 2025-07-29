@@ -44,6 +44,8 @@ const NewSchedule = () => {
     studyRange,
     studyStartTime,
     studyEndTime,
+    currentTab, // Importe o estado da tab
+    setCurrentTab, // Importe a função para mudar a tab
   } = useNewScheduleViewModel();
 
   return (
@@ -148,13 +150,22 @@ const NewSchedule = () => {
             </h2>
             <Separator className="opacity-20 h-0.5 my-1" />
 
+            {/* Este FormField encapsula o Tabs */}
             <FormField
               control={form.control}
-              name="disciplines"
-              render={({ field }) => (
+              name={currentTab === "manual" ? "disciplines" : "aiInputText"} // Nome condicional do campo
+              render={() => (
+                // Não precisa de field props aqui para o render do FormField "pai"
                 <FormItem>
                   <FormControl>
-                    <Tabs defaultValue="manual" className="w-full flex flex-col gap-2">
+                    <Tabs
+                      defaultValue="manual"
+                      value={currentTab} // Controla o valor do Tabs com o estado
+                      onValueChange={(value) =>
+                        setCurrentTab(value as "manual" | "ia")
+                      } // Atualiza o estado da tab
+                      className="w-full flex flex-col gap-2"
+                    >
                       <TabsList className="p-1 gap-1 bg-transparent border border-border/20 w-full h-fit">
                         <TabsTrigger value="manual" className="h-fit">
                           <p>Manual</p>
@@ -169,7 +180,7 @@ const NewSchedule = () => {
                       >
                         {disciplines.map((discipline, index) => (
                           <div
-                            key={index}
+                            key={discipline.id || index} // Use discipline.id se disponível, senão index
                             className="flex items-end gap-2 mb-2"
                           >
                             <FormField
@@ -243,31 +254,43 @@ const NewSchedule = () => {
                       </TabsContent>
                       <TabsContent value="ia">
                         <div className="flex flex-col gap-2">
-                          {field.value.map((discipline, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2"
-                            >
-                              <Textarea
-                                {...discipline}
-                                className="border border-border/20 text-sm"
-                                placeholder="Cole o edital aqui ou descreva os conteúdos"
-                              />{" "}
-                            </div>
-                          ))}
+                          <FormField
+                            control={form.control}
+                            name="aiInputText" // O NOVO CAMPO AQUI!
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Textarea
+                                    className="border border-border/20 text-sm"
+                                    placeholder="Cole o edital aqui ou descreva os conteúdos"
+                                    {...field} // Passa as props do react-hook-form para o Textarea
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
                       </TabsContent>
                     </Tabs>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage />{" "}
+                  {/* Exibe mensagens de erro para o FormField pai (se houver) */}
                 </FormItem>
               )}
             />
-            {form.formState.errors.disciplines && (
-              <p className="text-sm font-medium text-destructive mt-2">
-                {form.formState.errors.disciplines.message}
-              </p>
-            )}
+            {form.formState.errors.disciplines &&
+              currentTab === "manual" && ( // Mensagem de erro para disciplinas, só no modo manual
+                <p className="text-sm font-medium text-destructive mt-2">
+                  {form.formState.errors.disciplines.message}
+                </p>
+              )}
+            {form.formState.errors.aiInputText &&
+              currentTab === "ia" && ( // Mensagem de erro para o texto da IA, só no modo IA
+                <p className="text-sm font-medium text-destructive mt-2">
+                  {form.formState.errors.aiInputText.message}
+                </p>
+              )}
           </div>
 
           {/* Dias de Estudo */}
