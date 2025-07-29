@@ -9,7 +9,7 @@ export default function HomeLayout({
   return (
     <div className="h-screen">
       <Header />
-      <main className="flex-1 overflow-y-auto pt-18 pb-16">{children}</main>
+      <main className="flex-1 overflow-y-auto pt-18 pb-16 px-2">{children}</main>
       <FooterMenu />
     </div>
   );
