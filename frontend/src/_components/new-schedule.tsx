@@ -156,7 +156,11 @@ const NewSchedule = () => {
                     <div className="flex flex-col gap-2">
                       {field.value.map((discipline, index) => (
                         <div key={index} className="flex items-center gap-2">
-                          <Textarea {...discipline} className="border border-border/20 text-sm" placeholder="Cole o edital aqui"/>{" "}
+                          <Textarea
+                            {...discipline}
+                            className="border border-border/20 text-sm"
+                            placeholder="Cole o edital aqui"
+                          />{" "}
                         </div>
                       ))}
                     </div>
@@ -184,7 +188,7 @@ const NewSchedule = () => {
               render={() => (
                 <FormItem>
                   <FormControl>
-                    <div className="flex flex-wrap gap-2 justify-center sm:justify-between">
+                    <div className="flex flex-wrap gap-2 justify-between">
                       {weeakDaysShort.map((day, index) => (
                         <Button
                           type="button"
@@ -198,7 +202,7 @@ const NewSchedule = () => {
                             "border text-xs rounded-full aspect-square min-w-[40px] h-10 flex items-center justify-center cursor-pointer",
                             selectedWeekdays.includes(day)
                               ? "bg-primary text-primary-foreground border-transparent hover:bg-primary/90"
-                              : "bg-background text-foreground border-border hover:bg-accent"
+                              : "bg-white text-foreground border-border/20 hover:bg-accent"
                           )}
                           onClick={() => handleWeekdayToggle(day)}
                         >
@@ -345,7 +349,10 @@ const NewSchedule = () => {
                   <FormItem className="flex flex-col flex-grow w-full sm:w-auto">
                     <FormLabel className="text-xs">Início:</FormLabel>
                     <FormControl>
-                      <Select {...field}>
+                      <Select
+                        {...field}
+                        onValueChange={(value) => field.onChange(value)}
+                      >
                         <SelectTrigger className="w-full shadow-none border border-border/20 text-foregrounds  min-h-12">
                           <span className="text-foreground">
                             {field.value || "Selecione o horário"}
@@ -371,7 +378,10 @@ const NewSchedule = () => {
                   <FormItem className="flex flex-col flex-grow w-full sm:w-auto">
                     <FormLabel className="text-xs">Final:</FormLabel>
                     <FormControl>
-                      <Select {...field}>
+                      <Select
+                        {...field}
+                        onValueChange={(value) => field.onChange(value)}
+                      >
                         <SelectTrigger className="w-full shadow-none border border-border/20 text-foregrounds  min-h-12">
                           <span className="text-foreground">
                             {field.value || "Selecione o horário"}
