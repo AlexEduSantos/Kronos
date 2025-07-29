@@ -22,7 +22,7 @@ const Guide = () => {
           juntos!
         </p>
       </div>
-      <Link href="/guide/new-schedule" className="w-full flex justify-center">
+      <Link href="/new-schedule" className="w-full flex justify-center">
         <Button className="text-lg w-2/4 h-12 font-bold">Cadastrar</Button>
       </Link>
     </div>
