@@ -1,22 +1,42 @@
 "use client";
-import { format } from "date-fns";
-import { ptBR, se } from "date-fns/locale";
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameDay,
+} from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Card } from "./ui/card";
-import { useScheduleDetails } from "@/_viewmodels/useScheduleDetails";
+import { useEffect, useRef } from "react";
 
-const CalendarHorizontal = ({
-  selectedDay,
-  setSelectedDay,
-}: {
-  selectedDay: Date;
-  setSelectedDay: (date: Date) => void;
-}) => {
-  const {
-    today,
-    scrollContainerRef,
-    todayCardRef,
-    daysInMonth,
-  } = useScheduleDetails({ selectedDay, setSelectedDay });
+const CalendarHorizontal = () => {
+  const today = new Date();
+  const scrollContainerRef = useRef<HTMLDivElement>(null); // Ref para o contêiner de rolagem
+  const todayCardRef = useRef<HTMLDivElement>(null); // Ref para o Card do dia atual
+
+  // Gera todos os dias do mês atual
+  const daysInMonth = eachDayOfInterval({
+    start: startOfMonth(today),
+    end: endOfMonth(today),
+  });
+
+  useEffect(() => {
+    if (scrollContainerRef.current && todayCardRef.current) {
+      const container = scrollContainerRef.current;
+      const todayCard = todayCardRef.current;
+
+      const scrollTo =
+        todayCard.offsetLeft -
+        container.offsetWidth / 2 +
+        todayCard.offsetWidth / 2;
+
+      container.scrollTo({
+        left: scrollTo,
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
   return (
     <div className="w-full  flex gap-2">
@@ -30,25 +50,19 @@ const CalendarHorizontal = ({
           const semana = format(day, "EEE", { locale: ptBR })
             .replace(".", "")
             .slice(0, 3);
+          const isCurrentDay = isSameDay(day, today);
 
           return (
             <Card
               key={index}
-              ref={
-                day.toDateString() === today.toDateString()
-                  ? todayCardRef
-                  : null
-              }
+              ref={isCurrentDay ? todayCardRef : null}
               className={`border-none shadow-none min-w-[60px] min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary
                 ${
-                  selectedDay.toDateString() === day.toDateString()
+                  isCurrentDay
                     ? "bg-primary text-primary-foreground"
                     : "bg-white text-secondary"
                 }
               `}
-              onClick={() => {
-                setSelectedDay(day);
-              }}
             >
               <p className="text-xs">{mes}</p>
               <p className="text-lg font-bold">{dia}</p>
