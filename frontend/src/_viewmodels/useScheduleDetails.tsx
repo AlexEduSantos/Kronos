@@ -43,7 +43,7 @@ export function useScheduleDetails({
   const id = pathname.split("/")[2];
   const today = new Date();
 
-  const [schedule, setData] = useState<Data | undefined>(() => {
+  const [schedule, setSchedule] = useState<Data | undefined>(() => {
     const item = mockData.find((item) => item.id === parseInt(id));
     if (!item) return undefined;
     return {
@@ -94,6 +94,42 @@ export function useScheduleDetails({
     );
   }, [schedule, selectedDay]);
 
+  const disciplinesTotal = useMemo(() => {
+    return schedule?.days
+      .map((day) => day.topics.length)
+      .reduce((a, b) => a + b, 0);
+  }, [schedule]);
+  const checkedTotal = useMemo(() => {
+    return schedule?.days
+      .map((day) => day.topics.filter((topic) => topic.status === true).length)
+      .reduce((a, b) => a + b, 0);
+  }, [schedule]);
+  const progress =
+    disciplinesTotal && checkedTotal !== undefined
+      ? Math.round((checkedTotal / disciplinesTotal) * 100)
+      : 0;
+
+  function toggleDiscipline(targetDate: Date, topicId: number) {
+    if (!schedule) return;
+
+    const updatedDays = schedule.days.map((day) => {
+      if (new Date(day.date).toDateString() !== targetDate.toDateString()) {
+        return day;
+      }
+
+      const updatedTopics = day.topics.map((topic) => {
+        if (topic.id === String(topicId)) {
+          return { ...topic, status: !topic.status };
+        }
+        return topic;
+      });
+
+      return { ...day, topics: updatedTopics };
+    });
+
+    setSchedule({ ...schedule, days: updatedDays });
+  }
+
   return {
     schedule,
     today,
@@ -101,5 +137,7 @@ export function useScheduleDetails({
     todayCardRef,
     daysInMonth,
     disciplinePerDay,
+    progress,
+    toggleDiscipline,
   };
 }
