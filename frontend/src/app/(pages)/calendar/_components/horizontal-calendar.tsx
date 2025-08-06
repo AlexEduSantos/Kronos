@@ -11,15 +11,11 @@ const CalendarHorizontal = ({
   selectedDay: Date;
   setSelectedDay: (date: Date) => void;
 }) => {
-  const {
-    today,
-    scrollContainerRef,
-    todayCardRef,
-    daysInMonth,
-  } = useScheduleDetails({ selectedDay, setSelectedDay });
+  const { today, scrollContainerRef, todayCardRef, daysInMonth } =
+    useScheduleDetails({ selectedDay, setSelectedDay });
 
   return (
-    <div className="w-full  flex gap-2">
+    <div className="w-full flex gap-2 relative">
       <div
         className="flex overflow-x-auto scrollbar-hide gap-2"
         ref={scrollContainerRef}
@@ -57,6 +53,8 @@ const CalendarHorizontal = ({
           );
         })}
       </div>
+      <span className="absolute bottom-0 left-[-1px] min-w-[50px] h-full bg-gradient-to-r from-background to-transparent"/>
+       <span className="absolute bottom-0 right-[-1px] min-w-[50px] h-full bg-gradient-to-l from-background to-transparent"/>
     </div>
   );
 };
