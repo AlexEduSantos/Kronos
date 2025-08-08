@@ -20,9 +20,7 @@ const CalendarPage = () => {
               <Card
                 key={item.name}
                 onClick={() => router.push(`/calendar/${item.id}`)}
-                className={`flex flex-col gap-2 border-none shadow-xs rounded-md p-2 ${
-                  item.status === "true" ? "bg-primary" : ""
-                }`}
+                className={`flex flex-col gap-2 border-none shadow-xs rounded-md p-2 `}
               >
                 <CardTitle className="text-lg font-bold text-primary-foreground">
                   {item.name}
@@ -37,9 +35,9 @@ const CalendarPage = () => {
             ))}
           </>
         ) : (
-          <div>
+          <Card className={`flex flex-col gap-2 border-none shadow-xs rounded-md p-2 items-center justify-center py-8`}>
             <p className="text-gray-500">Nenhum cronograma cadastrado.</p>
-          </div>
+          </Card>
         )}
       </div>
       <Link href="/calendar/new">
