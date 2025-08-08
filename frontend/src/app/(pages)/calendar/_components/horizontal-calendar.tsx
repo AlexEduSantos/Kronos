@@ -17,7 +17,7 @@ const CalendarHorizontal = ({
   return (
     <div className="w-full flex gap-2 relative">
       <div
-        className="flex overflow-x-auto scrollbar-hide gap-2"
+        className="flex overflow-x-auto scrollbar-hide gap-2 py-1"
         ref={scrollContainerRef}
       >
         {daysInMonth.map((day, index) => {
@@ -35,7 +35,7 @@ const CalendarHorizontal = ({
                   ? todayCardRef
                   : null
               }
-              className={`border-none shadow-none min-w-[60px] min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary
+              className={`border-none min-w-[60px] min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary shadow-md
                 ${
                   selectedDay.toDateString() === day.toDateString()
                     ? "bg-primary text-primary-foreground"
