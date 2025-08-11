@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Schedule {
+  id              String           @id @default(uuid())
+  name            String
+  testDay         DateTime
+  studyStartDate  DateTime
+  studyEndDate    DateTime 
+  days            Day[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Day {
+  id         String   @id @default(uuid())
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduleId String
+  date       DateTime
+  topics     Topic[]
+  startTime  String
+  endTime    String 
+  
+  // evita dias duplicados por schedule
+  @@unique([scheduleId, date])
+  @@index([scheduleId])
+}
+
+model Topic {
+  id       String  @id @default(uuid())
+  day      Day     @relation(fields: [dayId], references: [id])
+  dayId    String
+  name     String
+  weight   Int
+  duration Int // minutos
+  status   Boolean @default(false)
+
+  @@index([dayId])
+}
