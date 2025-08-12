@@ -34,10 +34,11 @@ services:
       dockerfile: Dockerfile # O nome do Dockerfile
     restart: always
     environment:
-      DATABASE_URL: postgres://seu_usuario:sua_senha@db:5432/seu_banco_de_dados # URL de conexão com o banco de dados (o hostname é 'db', o nome do serviço)
+      DATABASE_URL: postgres://admin:admin@db:5432/kronos_db # URL de conexão com o banco de dados (o hostname é 'db', o nome do serviço)
       N8N_WEBHOOK_URL: http://n8n:5678/webhook/ # URL para o n8n dentro da rede Docker
     ports:
       - "3001:3001" # Mapeia a porta 3001 do contêiner para a porta 3001 da sua máquina (onde o NestJS rodará)
+      - "5555:5555"
     volumes:
       - ./backend:/app # Mapeia o código-fonte local para dentro do contêiner para hot-reloading
       - /app/node_modules # Evita que o node_modules local sobrescreva o do contêiner
