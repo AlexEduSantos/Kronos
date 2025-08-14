@@ -16,6 +16,18 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
-    "noFallthroughCasesInSwitch": true
-  }
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": ["src/*"]
+    }
+    // Remova a linha abaixo. TypeScript lida com isso automaticamente.
+    // "typeRoots": ["./node_modules/@types", "./node_modules/@prisma/client"]
+  },
+  "include": [
+    "src/**/*.ts"
+    // Remova as duas linhas abaixo. Elas não são para o compilador TypeScript.
+    // "prisma/schema.prisma",
+    // "node_modules/@prisma/client/**/*.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
 }
