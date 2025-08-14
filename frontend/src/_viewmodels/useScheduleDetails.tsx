@@ -5,7 +5,7 @@ import { eachDayOfInterval, endOfMonth, startOfMonth } from "date-fns";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-type Data = {
+export type Data = {
   id: string;
   name: string;
   testDay: string;
