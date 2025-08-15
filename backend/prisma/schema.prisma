@@ -8,14 +8,16 @@ datasource db {
 }
 
 model Schedule {
-  id              String           @id @default(uuid())
-  name            String
-  testDay         DateTime
-  studyStartDate  DateTime
-  studyEndDate    DateTime 
-  days            Day[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id             String   @id @default(uuid())
+  name           String
+  testDay        DateTime
+  studyStartDate DateTime
+  studyEndDate   DateTime
+  days           Day[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  User           User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String?
 }
 
 model Day {
@@ -25,8 +27,8 @@ model Day {
   date       DateTime
   topics     Topic[]
   startTime  String
-  endTime    String 
-  
+  endTime    String
+
   // evita dias duplicados por schedule
   @@unique([scheduleId, date])
   @@index([scheduleId])
@@ -34,7 +36,7 @@ model Day {
 
 model Topic {
   id       String  @id @default(uuid())
-  day      Day     @relation(fields: [dayId], references: [id])
+  day      Day     @relation(fields: [dayId], references: [id], onDelete: Cascade)
   dayId    String
   name     String
   weight   Int
@@ -42,4 +44,15 @@ model Topic {
   status   Boolean @default(false)
 
   @@index([dayId])
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  name      String
+  password  String
+  schedules Schedule[]
+  avatar    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
