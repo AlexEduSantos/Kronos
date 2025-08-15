@@ -15,6 +15,7 @@ import {
 export class ScheduleService {
   constructor(private prisma: PrismaService) {}
 
+  // Funções para consulta
   async getAllSchedules() {
     const schedules = await this.prisma.schedule.findMany({
       include: {
@@ -29,6 +30,26 @@ export class ScheduleService {
     return schedules;
   }
 
+  async getScheduleById(scheduleId: string) {
+    const schedule = await this.prisma.schedule.findUnique({
+      where: { id: scheduleId },
+      include: {
+        days: {
+          include: {
+            topics: true,
+          },
+        },
+      },
+    });
+
+    if (!schedule) {
+      throw new NotFoundException('Cronograma não encontrado.');
+    }
+
+    return schedule;
+  }
+
+  // Funções para criação
   async createSchedule(data: createScheduleDTO) {
     try {
       const { days, ...scheduleData } = data;
@@ -152,6 +173,77 @@ export class ScheduleService {
       }
       console.error('Erro ao criar dia:', error);
       throw new InternalServerErrorException('Não foi possível criar o dia.');
+    }
+  }
+
+  // Funções para exclusão
+  async deleteTopic(topicId: string) {
+    try {
+      const existingTopic = await this.prisma.topic.findUnique({
+        where: { id: topicId },
+      });
+
+      if (!existingTopic) {
+        throw new NotFoundException('Tópico não encontrado.');
+      }
+
+      await this.prisma.topic.delete({
+        where: { id: topicId },
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error('Erro ao deletar tópico:', error);
+      throw new InternalServerErrorException(
+        'Não foi possível deletar o tópico.',
+      );
+    }
+  }
+
+  async deleteDay(dayId: string) {
+    try {
+      const existingDay = await this.prisma.day.findUnique({
+        where: { id: dayId },
+      });
+
+      if (!existingDay) {
+        throw new NotFoundException('Dia não encontrado.');
+      }
+
+      await this.prisma.day.delete({
+        where: { id: dayId },
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error('Erro ao deletar dia:', error);
+      throw new InternalServerErrorException('Não foi possível deletar o dia.');
+    }
+  }
+
+  async deleteSchedule(scheduleId: string) {
+    try {
+      const existingSchedule = await this.prisma.schedule.findUnique({
+        where: { id: scheduleId },
+      });
+
+      if (!existingSchedule) {
+        throw new NotFoundException('Cronograma não encontrado.');
+      }
+
+      await this.prisma.schedule.delete({
+        where: { id: scheduleId },
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error('Erro ao deletar cronograma:', error);
+      throw new InternalServerErrorException(
+        'Não foi possível deletar o cronograma.',
+      );
     }
   }
 }
