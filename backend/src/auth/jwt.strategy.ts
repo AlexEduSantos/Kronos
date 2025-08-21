@@ -1,3 +1,4 @@
+// backend/src/auth/jwt.strategy.ts
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -8,8 +9,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Extrai o token do cabeçalho 'Bearer Token'
-      ignoreExpiration: false, // Não ignora a expiração do token
-      secretOrKey: process.env.JWT_SECRET || 'umSegredoMuitoForte123!@#', // USE A MESMA VARIÁVEL DE AMBIENTE!
+      ignoreExpiration: false,
+      secretOrKey: process.env.JWT_SECRET || 'df0f7a7c8e2b1d3f5a7b9c1d3e5f7a9b', // USE A MESMA VARIÁVEL DE AMBIENTE!
     });
   }
 
