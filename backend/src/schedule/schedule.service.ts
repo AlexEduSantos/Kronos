@@ -30,9 +30,11 @@ export class ScheduleService {
     return schedules;
   }
 
-  async getScheduleById(scheduleId: string) {
-    const schedule = await this.prisma.schedule.findUnique({
-      where: { id: scheduleId },
+  async getScheduleByUserId(userId: string) {
+    const schedules = await this.prisma.schedule.findMany({
+      where: {
+        userId: userId,
+      },
       include: {
         days: {
           include: {
@@ -42,15 +44,17 @@ export class ScheduleService {
       },
     });
 
-    if (!schedule) {
-      throw new NotFoundException('Cronograma não encontrado.');
+    if (!schedules || schedules.length === 0) {
+      throw new NotFoundException(
+        'Nenhum cronograma encontrado para este usuário.',
+      );
     }
 
-    return schedule;
+    return schedules;
   }
 
   // Funções para criação
-  async createSchedule(data: createScheduleDTO) {
+  async createSchedule(data: createScheduleDTO, userId: string) {
     try {
       const { days, ...scheduleData } = data;
 
@@ -75,6 +79,7 @@ export class ScheduleService {
               },
             })),
           },
+          userId: userId,
         },
         include: {
           days: {
