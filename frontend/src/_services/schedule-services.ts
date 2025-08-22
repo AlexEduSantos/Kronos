@@ -1,5 +1,7 @@
+import { apiRoute } from "@/_lib/utils";
+
 export async function getAllSchedules() {
-  const response = await fetch("http://localhost:3001/schedule/all", {
+  const response = await fetch(apiRoute + "/schedule", {
     method: "GET",
   });
   if (!response.ok) {
