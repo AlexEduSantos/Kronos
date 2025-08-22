@@ -6,12 +6,15 @@ import {
   registerFormSchema,
 } from "@/_schemas/authSchema";
 import { login, register } from "@/_services/auth-service";
+import { useAuthStore } from "@/_store/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export const useAuth = () => {
+  const { login: storeLogin } = useAuthStore();
+
   const router = useRouter();
 
   const loginForm = useForm<LoginFormData>({
@@ -38,9 +41,7 @@ export const useAuth = () => {
         const response = await login(data);
         toast.success("Login bem-sucedido!");
 
-        localStorage.setItem("access_token", response.access_token);
-
-        console.log("Token armazenado com sucesso!");
+        storeLogin(response.access_token, response.user);
 
         router.push("/");
       } catch (error) {
