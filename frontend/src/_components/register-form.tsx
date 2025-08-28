@@ -5,7 +5,6 @@ import { useAuth } from "@/_viewmodels/useAuth";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import Link from "next/link";
 
 const RegisterForm = () => {
   const { registerForm, onsubmitRegister } = useAuth();
@@ -21,7 +20,10 @@ const RegisterForm = () => {
           <Form {...registerForm}>
             <form
               className="flex flex-col gap-2 w-full"
-              onSubmit={() => onsubmitRegister()}
+              onSubmit={(e) => {
+                e.preventDefault();
+                onsubmitRegister();
+              }}
             >
               <FormField
                 control={registerForm.control}

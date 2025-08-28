@@ -9,6 +9,7 @@ import Link from "next/link";
 
 const LoginForm = () => {
   const { loginForm, onsubmitLogin } = useAuth();
+  const { isSubmitting } = loginForm.formState;
 
   return (
     <>
@@ -21,7 +22,8 @@ const LoginForm = () => {
           <Form {...loginForm}>
             <form
               className="flex flex-col gap-2 w-full"
-              onSubmit={() => {
+              onSubmit={(e) => {
+                e.preventDefault();
                 onsubmitLogin();
               }}
             >
@@ -73,8 +75,8 @@ const LoginForm = () => {
                 </Link>
               </div>
               <div className="flex gap-2 w-[98%]">
-                <Button className="w-1/2" type="submit">
-                  Entrar
+                <Button className="w-1/2" type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Entrando..." : "Entrar"}
                 </Button>
                 <Button
                   className="w-1/2 border border-border/20"
