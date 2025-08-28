@@ -8,16 +8,22 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/user';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get(':userId')
-  async findById(@Param('userId', new ParseUUIDPipe()) userId: string) {
+  @UseGuards(AuthGuard('jwt'))
+  @Get("user-by-id")
+  async findById(@Request() req: any) {
+    const userId = req.user.userId;
+
     const user = await this.userService.findById(userId);
     return user;
   }
