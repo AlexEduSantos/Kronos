@@ -15,7 +15,8 @@ import { useAuth } from "@/_viewmodels/useAuth";
 const Header = () => {
   const { logout } = useAuth();
   const { userData: user, isLoading, isError, error } = useUser();
-  console.log(user);
+
+  if (error) return <div>{error.message}</div>;
 
   if (isLoading || isError || user === undefined) {
     return (

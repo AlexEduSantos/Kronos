@@ -5,7 +5,6 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET); // Use sua 
 
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get("access_token")?.value;
-  console.log("TOKEN DO COOKIE:", token);
 
   if (!token) {
     return false;
