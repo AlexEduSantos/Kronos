@@ -2,6 +2,7 @@ import { UserService } from '@/user/user.service';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +20,17 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  async login(user: any, res: Response) {
     const payload = { email: user.email, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    const accessToken = this.jwtService.sign(payload);
+
+    res.cookie('access_token', accessToken, {
+      httpOnly: true, // Acesso apenas pelo servidor
+      secure: process.env.NODE_ENV === 'production', // Use HTTPS em produção
+      sameSite: 'strict',
+      maxAge: 3600000, // 1 hora de validade
+    });
+
+    return { message: 'Login successful' };
   }
 }
