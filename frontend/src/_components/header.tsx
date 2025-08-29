@@ -1,13 +1,21 @@
 "use client";
 import { useUser } from "@/_viewmodels/useUser";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { BellDot, Loader2, User2Icon } from "lucide-react";
+import { BellDot, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { Skeleton } from "./ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
+import { useAuth } from "@/_viewmodels/useAuth";
 
 const Header = () => {
+  const { logout } = useAuth();
   const { userData: user, isLoading, isError, error } = useUser();
+  console.log(user);
 
   if (isLoading || isError || user === undefined) {
     return (
@@ -23,13 +31,33 @@ const Header = () => {
     <div className="w-full flex items-center px-6 justify-between bg-white py-3 fixed top-0 z-50">
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-full border border-solid text-primary-foreground flex items-center justify-center overflow-hidden relative">
-          <Image
-            src={user?.avatar}
-            alt="Avatar"
-            className="w-full h-full object-cover"
-            fill
-            loading="eager"
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Image
+                src={user?.avatar}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+                fill
+                loading="eager"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              sideOffset={30}
+              align="start"
+              alignOffset={-30}
+              className="p-0"
+            >
+              <DropdownMenuItem className="p-1">
+                <Button
+                  className="w-full text-white"
+                  variant="secondary"
+                  onClick={() => logout()}
+                >
+                  Logout
+                </Button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="leading-none">
           <span className="text-md text-primary-foreground leading-none">

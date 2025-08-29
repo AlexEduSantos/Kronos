@@ -65,5 +65,10 @@ export const useAuth = () => {
     })();
   }
 
-  return { loginForm, registerForm, onsubmitLogin, onsubmitRegister };
+  function logout() {
+    storeLogin("", { id: "", email: "", name: "" });
+    router.push("/login");
+  }
+
+  return { loginForm, registerForm, onsubmitLogin, onsubmitRegister, logout };
 };
