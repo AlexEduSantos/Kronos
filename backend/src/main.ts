@@ -15,9 +15,10 @@ async function bootstrap() {
 
   // Opcional: Habilitar CORS se seu frontend estiver em uma porta diferente
   app.enableCors({
-    origin: ['http://localhost:3000'], // Permita o frontend acessar seu backend
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: ['http://localhost:3000'],
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   await app.listen(3001); // Certifique-se de que esta é a porta que seu docker-compose expõe
