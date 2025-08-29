@@ -8,6 +8,7 @@ export async function login(data: any) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
+    credentials: "include",
   });
   if (!response.ok) {
     const errorData = await response.json();
@@ -27,6 +28,7 @@ export async function register(data: any) {
       email: data.email,
       password: data.password,
     }),
+    credentials: "include",
   });
   if (!response.ok) {
     const errorData = await response.json();
