@@ -1,5 +1,4 @@
 import { apiRoute } from "@/_lib/utils";
-import { NextRequest } from "next/server";
 
 export async function login(data: any) {
   const response = await fetch(apiRoute + "/auth/login", {
