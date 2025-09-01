@@ -7,10 +7,11 @@ export function useSchedules() {
     data: allSchedules,
     isLoading,
     isError,
+    error,
   } = useQuery({
     queryKey: ["schedules"],
     queryFn: getAllSchedules,
   });
 
-  return { allSchedules, isLoading, isError };
+  return { allSchedules, isLoading, isError, error };
 }
