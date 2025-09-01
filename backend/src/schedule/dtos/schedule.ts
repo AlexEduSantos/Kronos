@@ -88,3 +88,17 @@ export class createScheduleDTO {
   @Type(() => CreateDayDto)
   days: CreateDayDto[];
 }
+
+export class updateScheduleDTO {
+  @IsString()
+  name: string;
+
+  @IsDateString()
+  testDay: Date;
+
+  @IsDateString()
+  studyStartDate: Date;
+
+  @IsDateString()
+  studyEndDate: Date;
+}
