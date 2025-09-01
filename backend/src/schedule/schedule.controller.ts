@@ -8,6 +8,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -23,92 +24,130 @@ import { AuthGuard } from '@nestjs/passport';
 export class ScheduleController {
   constructor(private scheduleService: ScheduleService) {}
 
-  // Rotas para consulta
+  // ======================
+  // SCHEDULE
+  // ======================
   @UseGuards(AuthGuard('jwt'))
   @Get('all')
   async getAllSchedules() {
-    const schedules = await this.scheduleService.getAllSchedules();
-
-    return schedules;
+    return this.scheduleService.getAllSchedules();
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('my-schedules')
   async getMySchedules(@Request() req: any) {
-    const userId = req.user.userId;
-
-    const schedules = await this.scheduleService.getScheduleByUserId(userId);
-
-    return schedules;
+    return this.scheduleService.getScheduleByUserId(req.user.userId);
   }
 
-  // Rotas para criação
   @UseGuards(AuthGuard('jwt'))
-  @Post('createSchedule')
+  @Get(':id')
+  async getScheduleById(@Param('id', new ParseUUIDPipe()) scheduleId: string) {
+    return this.scheduleService.getScheduleById(scheduleId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   async createSchedule(
     @Request() req: any,
     @Body() createScheduleDto: createScheduleDTO,
   ) {
-    const userId = req.user.userId; // Get userId from the token
-
-    const newSchedule =
-      await this.scheduleService.createSchedule(createScheduleDto, userId);
-
-    return newSchedule;
+    return this.scheduleService.createSchedule(createScheduleDto, req.user.userId);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('/:scheduleId/days')
-  @HttpCode(HttpStatus.CREATED)
-  async createDay(
+  @Put(':scheduleId')
+  async updateSchedule(
     @Param('scheduleId', new ParseUUIDPipe()) scheduleId: string,
-    @Body() createDayDto: CreateDayDto,
+    @Body() updateScheduleDto: createScheduleDTO,
   ) {
-    const newDay = await this.scheduleService.createDay(
-      scheduleId,
-      createDayDto,
-    );
-
-    return newDay;
+    return this.scheduleService.updateSchedule(scheduleId, updateScheduleDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('/days/:dayId/topics')
-  @HttpCode(HttpStatus.CREATED)
-  async createTopic(
-    @Body() createTopicDto: CreateTopicDto,
-    @Param('dayId', new ParseUUIDPipe()) dayId: string,
-  ) {
-    const newTopic = await this.scheduleService.createTopic(
-      createTopicDto,
-      dayId,
-    );
-
-    return newTopic;
-  }
-
-  // Rotas para exclusão
-  @UseGuards(AuthGuard('jwt'))
-  @Delete('/topics/:topicId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteTopic(@Param('topicId', new ParseUUIDPipe()) topicId: string) {
-    await this.scheduleService.deleteTopic(topicId);
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Delete('/days/:dayId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteDay(@Param('dayId', new ParseUUIDPipe()) dayId: string) {
-    await this.scheduleService.deleteTopic(dayId);
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Delete('/:scheduleId')
+  @Delete(':scheduleId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteSchedule(
     @Param('scheduleId', new ParseUUIDPipe()) scheduleId: string,
   ) {
     await this.scheduleService.deleteSchedule(scheduleId);
+  }
+
+  // ======================
+  // DAY
+  // ======================
+  @UseGuards(AuthGuard('jwt'))
+  @Get('days/:dayId')
+  async getDayById(@Param('dayId', new ParseUUIDPipe()) dayId: string) {
+    return this.scheduleService.getDayById(dayId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':scheduleId/days')
+  @HttpCode(HttpStatus.CREATED)
+  async createDay(
+    @Param('scheduleId', new ParseUUIDPipe()) scheduleId: string,
+    @Body() createDayDto: CreateDayDto,
+  ) {
+    return this.scheduleService.createDay(scheduleId, createDayDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('days/:dayId')
+  async updateDay(
+    @Param('dayId', new ParseUUIDPipe()) dayId: string,
+    @Body() updateDayDto: CreateDayDto,
+  ) {
+    return this.scheduleService.updateDay(dayId, updateDayDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('days/:dayId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteDay(@Param('dayId', new ParseUUIDPipe()) dayId: string) {
+    await this.scheduleService.deleteDay(dayId);
+  }
+
+  // ======================
+  // TOPIC
+  // ======================
+  @UseGuards(AuthGuard('jwt'))
+  @Get('topics/:topicId')
+  async getTopicById(@Param('topicId', new ParseUUIDPipe()) topicId: string) {
+    return this.scheduleService.getTopicById(topicId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('days/:dayId/topics')
+  @HttpCode(HttpStatus.CREATED)
+  async createTopic(
+    @Param('dayId', new ParseUUIDPipe()) dayId: string,
+    @Body() createTopicDto: CreateTopicDto,
+  ) {
+    return this.scheduleService.createTopic(createTopicDto, dayId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('topics/:topicId')
+  async updateTopic(
+    @Param('topicId', new ParseUUIDPipe()) topicId: string,
+    @Body() updateTopicDto: CreateTopicDto,
+  ) {
+    return this.scheduleService.updateTopic(topicId, updateTopicDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('topics/:topicId/status')
+  async toggleTopicStatus(
+    @Param('topicId', new ParseUUIDPipe()) topicId: string,
+  ) {
+    return this.scheduleService.toggleTopicStatus(topicId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('topics/:topicId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteTopic(@Param('topicId', new ParseUUIDPipe()) topicId: string) {
+    await this.scheduleService.deleteTopic(topicId);
   }
 }
