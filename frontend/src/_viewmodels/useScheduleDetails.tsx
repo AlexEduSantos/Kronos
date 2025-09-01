@@ -1,9 +1,20 @@
 "use client";
 
-import { mockData } from "@/_mock/data";
-import { eachDayOfInterval, endOfMonth, startOfMonth } from "date-fns";
+import {
+  eachDayOfInterval,
+  endOfMonth,
+  endOfYear,
+  startOfMonth,
+  startOfYear,
+} from "date-fns";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getScheduleById,
+  toggleStatusTopic,
+  updateTopic,
+} from "@/_services/schedule-services";
 
 export type Data = {
   id: string;
@@ -28,10 +39,6 @@ export type Data = {
   }[];
 };
 
-interface ScheduleDetailsProps {
-  id: string;
-}
-
 export function useScheduleDetails({
   selectedDay,
   setSelectedDay,
@@ -43,23 +50,31 @@ export function useScheduleDetails({
   const id = pathname.split("/")[2];
   const today = new Date();
 
-  const [schedule, setSchedule] = useState<Data | undefined>(() => {
-    const item = mockData.find((item) => item.id === parseInt(id));
-    if (!item) return undefined;
-    return {
-      ...item,
-      id: String(item.id),
-      studyStartDate: new Date(item.studyStartDate),
-      studyEndDate: new Date(item.studyEndDate),
-      days: item.days.map((day) => ({
-        ...day,
-        date: new Date(day.date),
-        topics: day.topics.map((topic) => ({
-          ...topic,
-          id: String(topic.id),
-        })),
-      })),
-    };
+  // busca o cronograma pelo id
+  const {
+    data: schedule,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<Data>({
+    queryKey: ["schedule", id],
+    queryFn: () => getScheduleById(id),
+    enabled: !!id,
+  });
+
+  const queryClient = useQueryClient();
+
+  // Armazene a mutation em uma constante
+  const { mutate: mutateStatusTopic } = useMutation({
+    mutationFn: (topicId: string) => toggleStatusTopic(topicId),
+    onSuccess: () => {
+      // Invalida a query 'schedules' para forçar uma nova busca
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.refetchQueries({ queryKey: ["schedule", id] });
+    },
+    onError: (error) => {
+      console.error("Erro ao atualizar o tópico:", error);
+    },
   });
 
   const scrollContainerRef = useRef<HTMLDivElement>(null); // Ref para o contêiner de rolagem
@@ -69,6 +84,11 @@ export function useScheduleDetails({
   const daysInMonth = eachDayOfInterval({
     start: startOfMonth(today),
     end: endOfMonth(today),
+  });
+
+  const daysInAYear = eachDayOfInterval({
+    start: startOfYear(today),
+    end: endOfYear(today),
   });
 
   useEffect(() => {
@@ -89,9 +109,13 @@ export function useScheduleDetails({
   }, []);
 
   const disciplinePerDay = useMemo(() => {
-    return schedule?.days.filter(
-      (day) => day.date.toDateString() === selectedDay.toDateString()
-    );
+    if (!schedule) {
+      return [];
+    }
+    return schedule.days.filter((day) => {
+      // Converte a string da data para um objeto Date antes de comparar
+      return new Date(day.date).toDateString() === selectedDay.toDateString();
+    });
   }, [schedule, selectedDay]);
 
   const disciplinesTotal = useMemo(() => {
@@ -109,25 +133,10 @@ export function useScheduleDetails({
       ? Math.round((checkedTotal / disciplinesTotal) * 100)
       : 0;
 
-  function toggleDiscipline(targetDate: Date, topicId: number) {
+  function toggleDiscipline(topicId: string) {
     if (!schedule) return;
 
-    const updatedDays = schedule.days.map((day) => {
-      if (new Date(day.date).toDateString() !== targetDate.toDateString()) {
-        return day;
-      }
-
-      const updatedTopics = day.topics.map((topic) => {
-        if (topic.id === String(topicId)) {
-          return { ...topic, status: !topic.status };
-        }
-        return topic;
-      });
-
-      return { ...day, topics: updatedTopics };
-    });
-
-    setSchedule({ ...schedule, days: updatedDays });
+    mutateStatusTopic(topicId);
   }
 
   return {
@@ -136,6 +145,7 @@ export function useScheduleDetails({
     scrollContainerRef,
     todayCardRef,
     daysInMonth,
+    daysInAYear,
     disciplinePerDay,
     progress,
     toggleDiscipline,
