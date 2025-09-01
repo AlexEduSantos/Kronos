@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Schedule {
-  id             String   @id @default(uuid())
+  id             String   @id @default(uuid()) @unique
   name           String
   testDay        DateTime
   studyStartDate DateTime
