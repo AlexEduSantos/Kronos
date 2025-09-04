@@ -1,28 +1,42 @@
 "use client";
 
 import { useScheduleDetails } from "@/_viewmodels/useScheduleDetails";
-import { usePathname } from "next/navigation";
 import { format } from "date-fns";
 import { Card } from "./ui/card"; // Importar Card
 import { Checkbox } from "./ui/checkbox";
-import { PenBoxIcon, Trash2Icon } from "lucide-react";
+import { PenBoxIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { useState } from "react";
-import CalendarHorizontal from "@/app/(pages)/calendar/_components/horizontal-calendar";
 import { Progress } from "./ui/progress";
 import { cn } from "@/_lib/utils"; // Importar cn para condicional de classes
+import CalendarHorizontal from "@/app/(pages)/calendar/_components/horizontal-calendar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Form, FormField, FormLabel } from "./ui/form";
+import { Input } from "./ui/input";
+import NewTopicForm from "./new-topic-form";
+import CalendarPagination from "@/app/(pages)/calendar/_components/pagination";
 
 const ScheduleDetails = () => {
-  const pathname = usePathname();
-  const id = pathname.split("/")[2];
   const [selectedDay, setSelectedDay] = useState<Date>(new Date());
 
-  const { schedule, disciplinePerDay, progress, toggleDiscipline } =
-    useScheduleDetails({
-      selectedDay,
-      setSelectedDay,
-    });
+  const {
+    schedule,
+    currentDayDisciplines,
+    progress,
+    toggleDiscipline,
+    topicForm,
+  } = useScheduleDetails({
+    selectedDay,
+    setSelectedDay,
+  });
 
   if (!schedule) {
     // Se schedule for null, mostre um loading ou mensagem
@@ -32,10 +46,7 @@ const ScheduleDetails = () => {
       </div>
     );
   }
-
   // Verificar se há disciplinas para o dia selecionado
-  const currentDayDisciplines =
-    disciplinePerDay!.length > 0 ? disciplinePerDay![0].topics : [];
 
   return (
     <div className="flex flex-col gap-2 w-full p-0 sm:p-0">
@@ -75,7 +86,7 @@ const ScheduleDetails = () => {
               className={cn(
                 "flex flex-col p-4 shadow-md transition-all duration-300",
                 topic.status
-                  ? "bg-card/70 border-l-4 border-primary"  
+                  ? "bg-card/70 border-l-4 border-primary"
                   : "bg-card border-l-4 border-primary-foreground/50"
               )}
             >
@@ -85,9 +96,7 @@ const ScheduleDetails = () => {
                     id={topic.id}
                     className="h-6 w-6 rounded-md border-border text-primary-foreground data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" // Estilo do checkbox
                     checked={topic.status}
-                    onCheckedChange={
-                      () => toggleDiscipline(selectedDay, topic.id) // Passe selectedDay, não discipline.date
-                    }
+                    onCheckedChange={() => toggleDiscipline(topic.id)}
                   />
                   <div className="flex flex-col justify-between">
                     <Label
@@ -98,7 +107,7 @@ const ScheduleDetails = () => {
                       )}
                     >
                       {topic.name}
-                    </Label>                    
+                    </Label>
                     <div className="flex items-center gap-4">
                       {topic.duration && ( // Exibir duração se existir
                         <p className="text-xs text-muted-foreground mt-1">
@@ -141,6 +150,20 @@ const ScheduleDetails = () => {
           <p className="text-sm">
             Que tal um descanso merecido ou revisar algo por conta própria?
           </p>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button onClick={() => {}}>
+                <PlusIcon />
+                Adicionar Tópico
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-white border-none">
+              <CalendarPagination
+                selectedDay={selectedDay}
+                setSelectedDay={setSelectedDay}
+              />
+            </DialogContent>
+          </Dialog>
         </Card>
       )}
     </div>
