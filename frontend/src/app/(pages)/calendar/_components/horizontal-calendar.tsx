@@ -11,7 +11,7 @@ const CalendarHorizontal = ({
   selectedDay: Date;
   setSelectedDay: (date: Date) => void;
 }) => {
-  const { today, scrollContainerRef, todayCardRef, daysInMonth } =
+  const { today, scrollContainerRef, todayCardRef, daysInAYear } =
     useScheduleDetails({ selectedDay, setSelectedDay });
 
   return (
@@ -20,7 +20,8 @@ const CalendarHorizontal = ({
         className="flex overflow-x-auto scrollbar-hide gap-2 py-1"
         ref={scrollContainerRef}
       >
-        {daysInMonth.map((day, index) => {
+        <div className="min-w-1/3 min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary shadow-none"></div>
+        {daysInAYear.map((day, index) => {
           const dia = day.getDate();
           const mes = format(day, "LLL", { locale: ptBR });
           const semana = format(day, "EEE", { locale: ptBR })
@@ -52,9 +53,10 @@ const CalendarHorizontal = ({
             </Card>
           );
         })}
+        <div className="min-w-1/3 min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary shadow-none"></div>
       </div>
-      <span className="absolute bottom-0 left-[-1px] min-w-[50px] h-full bg-gradient-to-r from-background to-transparent"/>
-       <span className="absolute bottom-0 right-[-1px] min-w-[50px] h-full bg-gradient-to-l from-background to-transparent"/>
+      <span className="absolute bottom-0 left-[-1px] min-w-[50px] h-full bg-gradient-to-r from-background to-transparent" />
+      <span className="absolute bottom-0 right-[-1px] min-w-[50px] h-full bg-gradient-to-l from-background to-transparent" />
     </div>
   );
 };
