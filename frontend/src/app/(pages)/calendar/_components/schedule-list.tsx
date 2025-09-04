@@ -3,23 +3,20 @@
 import { Button } from "@/_components/ui/button";
 import { Card, CardContent, CardTitle } from "@/_components/ui/card";
 import { useSchedules } from "@/_viewmodels/useSchedule";
-import { Data } from "@/_viewmodels/useScheduleDetails";
 import { format } from "date-fns";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const Test = () => {
-  const { allSchedules: data, isLoading, isError } = useSchedules();
+const ScheduleList = () => {
+  const { allSchedules: data, isLoading, isError, error } = useSchedules();
   const router = useRouter();
 
   if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading schedules</div>;
-
-  console.log("Schedules:", data);
+  if (error) return <div>Nenhum cronograma de estudo cadastrado</div>;
 
   return (
-    <div className="relative w-full h-full flex flex-col gap-2 py-2">
+    <div className="relative w-full h-full flex flex-col gap-2">
       <div className="flex flex-col gap-2">
         {data.length > 0 ? (
           <>
@@ -60,4 +57,4 @@ const Test = () => {
   );
 };
 
-export default Test;
+export default ScheduleList;
