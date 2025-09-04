@@ -1,5 +1,5 @@
 // src/schemas/scheduleSchema.ts
-import { z } from "zod";
+import { date, z } from "zod";
 
 // Define o schema principal para o formulário de cronograma
 export const scheduleFormSchema = z
@@ -61,3 +61,25 @@ export const scheduleFormSchema = z
 
 // Define o tipo TypeScript a partir do schema Zod
 export type ScheduleFormData = z.infer<typeof scheduleFormSchema>;
+
+export const topicsFormSchema = z.object({
+  name: z.string().min(1, "O nome da disciplina é obrigatório."),
+  weight: z
+    .number()
+    .min(0, "O peso deve ter no mínimo 0.")
+    .max(100, "O peso deve ter no máximo 100."),
+  duration: z.number().min(10, "A duração deve ter no mínimo 10 minutos."),
+  status: z.boolean(),
+  dayId: z.string(),
+});
+
+export type TopicsFormData = z.infer<typeof topicsFormSchema>;
+
+export const daysFormSchema = z.object({
+  date: z.date().min(new Date(), "A data deve ser no futuro."),
+  startTime: z.string().min(1, "O horário de início é obrigatório."),
+  endTime: z.string().min(1, "O horário final é obrigatório."),
+  topics: z.array(topicsFormSchema).optional(),
+});
+
+export type DaysFormData = z.infer<typeof daysFormSchema>;
