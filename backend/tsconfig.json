@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolvePackageJsonExports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -14,20 +18,8 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
-    "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@/*": ["src/*"]
-    }
-    // Remova a linha abaixo. TypeScript lida com isso automaticamente.
-    // "typeRoots": ["./node_modules/@types", "./node_modules/@prisma/client"]
-  },
-  "include": [
-    "src/**/*.ts"
-    // Remova as duas linhas abaixo. Elas não são para o compilador TypeScript.
-    // "prisma/schema.prisma",
-    // "node_modules/@prisma/client/**/*.d.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false
+  }
 }
