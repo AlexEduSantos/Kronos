@@ -1,25 +1,43 @@
+// src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common'; // Importe ValidationPipe
+import * as session from 'express-session';
+import * as passport from 'passport';
+import { Pool } from 'pg';
+import * as createPgSession from 'connect-pg-simple';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // Remove propriedades que não estão no DTO
-      transform: true, // Transforma automaticamente os payloads em instâncias de DTO
-      forbidNonWhitelisted: true, // Lança um erro se propriedades não permitidas forem enviadas
+  const pgPool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
+
+  const PgSession = createPgSession(session);
+
+  const sessionStore = new PgSession({
+    pool: pgPool,
+    tableName: 'session',
+  });
+
+  app.use(
+    session({
+      store: sessionStore,
+      secret: process.env.SESSION_SECRET || 'daf0f7a7c8e2b1d3f5a7b9c1d3e5f7a9b',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 3600000,
+        httpOnly: true, 
+        sameSite: 'none',
+        secure: true, 
+      },
     }),
   );
 
-  // Opcional: Habilitar CORS se seu frontend estiver em uma porta diferente
-  app.enableCors({
-    origin: ['http://localhost:3000'], // Permita o frontend acessar seu backend
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+  app.use(passport.initialize());
+  app.use(passport.session());
 
-  await app.listen(3001); // Certifique-se de que esta é a porta que seu docker-compose expõe
+  await app.listen(3001);
 }
 bootstrap();

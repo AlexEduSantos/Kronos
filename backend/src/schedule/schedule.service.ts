@@ -4,30 +4,14 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import {
-  CreateDayDto,
-  createScheduleDTO,
-  CreateTopicDto,
-  updateScheduleDTO,
-} from './dtos/schedule';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateDayDto, CreateScheduleDto, CreateTopicDto, UpdateScheduleDto } from './dto/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
   constructor(private prisma: PrismaService) {}
 
-  // ======================
-  // SCHEDULE
-  // ======================
-  async getAllSchedules() {
-    return this.prisma.schedule.findMany({
-      include: {
-        days: { include: { topics: true } },
-      },
-    });
-  }
-
-  async getScheduleByUserId(userId: string) {
+  async getSchedule(userId: string) {
     return this.prisma.schedule.findMany({
       where: { userId },
       orderBy: { testDay: 'desc' },
@@ -37,21 +21,10 @@ export class ScheduleService {
     });
   }
 
-  async getScheduleById(scheduleId: string) {
-    const schedule = await this.prisma.schedule.findUnique({
-      where: { id: scheduleId },
-      include: { days: { include: { topics: true } } },
-    });
-
-    if (!schedule) {
-      throw new NotFoundException('Cronograma não encontrado.');
-    }
-    return schedule;
-  }
-
-  async createSchedule(data: createScheduleDTO, userId: string) {
+  async createSchedule(data: CreateScheduleDto, userId: string) {
     try {
       const { days, ...scheduleData } = data;
+      console.log(userId);
 
       return await this.prisma.schedule.create({
         data: {
@@ -74,7 +47,7 @@ export class ScheduleService {
               },
             })),
           },
-          userId,
+          userId: userId,
         },
         include: { days: { include: { topics: true } } },
       });
@@ -86,17 +59,16 @@ export class ScheduleService {
     }
   }
 
-  async updateSchedule(scheduleId: string, updateData: updateScheduleDTO) {
+  async updateSchedule(scheduleId: string, updateData: UpdateScheduleDto) {
     try {
       return await this.prisma.schedule.update({
         where: { id: scheduleId },
         data: {
-          ...updateData,
+          name: updateData.name,
           testDay: new Date(updateData.testDay),
           studyStartDate: new Date(updateData.studyStartDate),
           studyEndDate: new Date(updateData.studyEndDate),
         },
-        include: { days: { include: { topics: true } } },
       });
     } catch (error) {
       console.error('Erro ao atualizar cronograma:', error);
