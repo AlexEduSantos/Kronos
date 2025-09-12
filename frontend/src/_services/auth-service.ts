@@ -6,6 +6,7 @@ export async function login(data: any) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
   if (!response.ok) {
@@ -26,10 +27,26 @@ export async function register(data: any) {
       email: data.email,
       password: data.password,
     }),
+    credentials: "include",
   });
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.message || "Falha ao registrar");
+  }
+  return await response.json();
+}
+
+export async function logout() {
+  const response = await fetch(apiRoute + "/auth/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Falha ao fazer logout");
   }
   return await response.json();
 }

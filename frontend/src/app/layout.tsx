@@ -23,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="scroll-smooth">
       <body className={`${inter.variable} antialiased w-screen h-screen `}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+        </QueryProvider>
         <Toaster />
       </body>
     </html>
