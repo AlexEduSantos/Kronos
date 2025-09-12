@@ -9,6 +9,11 @@ import * as createPgSession from 'connect-pg-simple';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: 'http://localhost:3000', // Permite requisições do seu frontend
+    credentials: true,
+  });
+
   const pgPool = new Pool({
     connectionString: process.env.DATABASE_URL,
   });
@@ -28,9 +33,9 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 3600000,
-        httpOnly: true, 
-        sameSite: 'none',
-        secure: true, 
+        httpOnly: true,
+        sameSite: 'lax', // funciona bem em localhost
+        secure: false,
       },
     }),
   );
