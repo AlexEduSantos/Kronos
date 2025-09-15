@@ -48,5 +48,10 @@ export async function logout() {
     const errorData = await response.json();
     throw new Error(errorData.message || "Falha ao fazer logout");
   }
-  return await response.json();
+  if (
+    response.headers.get("Content-Length") === "0" ||
+    response.status === 204
+  ) {
+    return { success: true, message: "Logout realizado com sucesso" };
+  }
 }
