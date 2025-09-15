@@ -2,7 +2,7 @@
 import { date, z } from "zod";
 
 // Define o schema principal para o formulário de cronograma
-export const scheduleFormSchema = z
+export const newScheduleFormSchema = z
   .object({
     name: z.string().min(1, "Nome do cronograma é obrigatório."),
     testDay: z
@@ -60,7 +60,7 @@ export const scheduleFormSchema = z
   );
 
 // Define o tipo TypeScript a partir do schema Zod
-export type ScheduleFormData = z.infer<typeof scheduleFormSchema>;
+export type NewScheduleFormData = z.infer<typeof newScheduleFormSchema>;
 
 export const topicsFormSchema = z.object({
   name: z.string().min(1, "O nome da disciplina é obrigatório."),
@@ -83,3 +83,17 @@ export const daysFormSchema = z.object({
 });
 
 export type DaysFormData = z.infer<typeof daysFormSchema>;
+
+export const scheduleFormSchema = z.object({
+  name: z.string().min(1, "O nome do cronograma é obrigatório."),
+  testDay: z.date().min(new Date(), "A data da prova deve ser no futuro."),
+  studyStartDate: z
+    .date()
+    .min(new Date(), "A data de início do estudo é obrigatória."),
+  studyEndDate: z
+    .date()
+    .min(new Date(), "A data final do estudo é obrigatória."),
+  days: z.array(daysFormSchema).optional(),
+});
+
+export type ScheduleFormData = z.infer<typeof scheduleFormSchema>;
