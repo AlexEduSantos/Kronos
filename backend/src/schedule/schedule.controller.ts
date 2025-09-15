@@ -35,6 +35,11 @@ export class ScheduleController {
     return this.scheduleService.getSchedule(userId);
   }
 
+  @Get(':scheduleId')
+  async getScheduleById(@Request() req: any, @Param('scheduleId') scheduleId: string) {
+    return this.scheduleService.getScheduleById(scheduleId);
+  }
+
   @Post('createSchedule')
   @HttpCode(HttpStatus.CREATED)
   async createSchedule(

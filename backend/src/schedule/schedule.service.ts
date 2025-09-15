@@ -5,7 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateDayDto, CreateScheduleDto, CreateTopicDto, UpdateScheduleDto } from './dto/schedule.dto';
+import {
+  CreateDayDto,
+  CreateScheduleDto,
+  CreateTopicDto,
+  UpdateScheduleDto,
+} from './dto/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -15,6 +20,15 @@ export class ScheduleService {
     return this.prisma.schedule.findMany({
       where: { userId },
       orderBy: { testDay: 'desc' },
+      include: {
+        days: { include: { topics: true } },
+      },
+    });
+  }
+
+  async getScheduleById(scheduleId: string) {
+    return this.prisma.schedule.findUnique({
+      where: { id: scheduleId },
       include: {
         days: { include: { topics: true } },
       },
