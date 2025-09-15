@@ -1,5 +1,11 @@
+import ScheduleList from "@/_components/schedules-list";
+
 const Schedules = () => {
-  return <>Teste</>;
+  return (
+    <>
+      <ScheduleList />
+    </>
+  );
 };
 
 export default Schedules;
