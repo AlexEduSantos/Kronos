@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("connect.sid");
-  const protectedPaths = ["/", "/dashboard", "/profile"]; // Adicione todas as rotas protegidas
+  const protectedPaths = ["/", "/schedules", "/settings", "/*"]; 
 
   const isProtectedRoute = protectedPaths.includes(request.nextUrl.pathname);
 
