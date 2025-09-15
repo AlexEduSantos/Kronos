@@ -8,6 +8,7 @@ import {
   HttpStatus,
   HttpCode,
   UnauthorizedException,
+  Res,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -47,15 +48,15 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Request() req: ExpressRequest) {
-    return new Promise((resolve, reject) => {
-      req.logout((err: Error) => {
-        if (err) {
-          return reject(err);
-        }
-        // Retorna uma resposta de sucesso após o logout
-        resolve({ message: 'Logout bem-sucedido.' });
-      });
+  async logout(
+    @Request() req: ExpressRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    req.logout((err) => {
+      if (err) {
+        return { message: 'Falha ao encerrar a sessão' };
+      }
+      return { message: 'Sessão encerrada com sucesso!' };
     });
   }
 
