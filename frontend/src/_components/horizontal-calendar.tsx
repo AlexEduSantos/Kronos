@@ -1,0 +1,64 @@
+"use client";
+import { format } from "date-fns";
+import { ptBR, se } from "date-fns/locale";
+import { Card } from "@/_components/ui/card";
+import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
+
+const CalendarHorizontal = ({
+  selectedDay,
+  setSelectedDay,
+}: {
+  selectedDay: Date;
+  setSelectedDay: (date: Date) => void;
+}) => {
+  const { today, scrollContainerRef, todayCardRef, daysInAYear } =
+    useDetailsSchedule({ selectedDay, setSelectedDay });
+
+  return (
+    <div className="w-full flex gap-2 relative">
+      <div
+        className="flex overflow-x-auto scrollbar-hide gap-2 py-1"
+        ref={scrollContainerRef}
+      >
+        <div className="min-w-1/3 min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary shadow-none"></div>
+        {daysInAYear.map((day, index) => {
+          const dia = day.getDate();
+          const mes = format(day, "LLL", { locale: ptBR });
+          const semana = format(day, "EEE", { locale: ptBR })
+            .replace(".", "")
+            .slice(0, 3);
+
+          return (
+            <Card
+              key={index}
+              ref={
+                day.toDateString() === today.toDateString()
+                  ? todayCardRef
+                  : null
+              }
+              className={`border-none min-w-[60px] min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary shadow-md
+                ${
+                  selectedDay.toDateString() === day.toDateString()
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-white text-secondary"
+                }
+              `}
+              onClick={() => {
+                setSelectedDay(day);
+              }}
+            >
+              <p className="text-xs">{mes}</p>
+              <p className="text-lg font-bold">{dia}</p>
+              <p className="text-xs">{semana}</p>
+            </Card>
+          );
+        })}
+        <div className="min-w-1/3 min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary shadow-none"></div>
+      </div>
+      <span className="absolute bottom-0 left-[-1px] min-w-[50px] h-full bg-gradient-to-r from-background to-transparent" />
+      <span className="absolute bottom-0 right-[-1px] min-w-[50px] h-full bg-gradient-to-l from-background to-transparent" />
+    </div>
+  );
+};
+
+export default CalendarHorizontal;

@@ -20,13 +20,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   eachDayOfInterval,
+  eachHourOfInterval,
+  endOfDay,
   endOfMonth,
   endOfYear,
+  startOfDay,
   startOfMonth,
   startOfYear,
 } from "date-fns";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -113,11 +116,17 @@ export const useSchedule = () => {
   };
 };
 
-export const useDetailsSchedule = () => {
+export const useDetailsSchedule = ({
+  selectedDay,
+  setSelectedDay,
+}: {
+  selectedDay: Date;
+  setSelectedDay: (date: Date) => void;
+}) => {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
   const today = new Date();
-  const [selectedDay, setSelectedDay] = useState(today);
+
   const [step, setStep] = useState(1);
   const [dayId, setDayId] = useState<string | undefined>(undefined);
 
@@ -188,17 +197,11 @@ export const useDetailsSchedule = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null); // Ref para o contêiner de rolagem
   const todayCardRef = useRef<HTMLDivElement>(null); // Ref para o Card do dia atual
 
-  const hoursPerDay = useMemo(() => {
-    if (!schedule) {
-      return [];
-    }
-    return schedule.days.filter((day) => {
-      // Converte a string da data para um objeto Date antes de comparar
-      return new Date(day.date).toDateString() === selectedDay.toDateString();
-    });
-  }, [schedule, selectedDay]);
+  const hoursPerDay = eachHourOfInterval({
+    start: startOfDay(today),
+    end: endOfDay(today),
+  });
 
-  // Gera todos os dias do mês atual
   const daysInMonth = eachDayOfInterval({
     start: startOfMonth(today),
     end: endOfMonth(today),
@@ -226,16 +229,6 @@ export const useDetailsSchedule = () => {
     }
   }, []);
 
-  const disciplinePerDay = useMemo(() => {
-    if (!schedule) {
-      return [];
-    }
-    return schedule.days.filter((day) => {
-      // Converte a string da data para um objeto Date antes de comparar
-      return new Date(day.date).toDateString() === selectedDay.toDateString();
-    });
-  }, [schedule, selectedDay]);
-
   const disciplinesTotal = useMemo(() => {
     return schedule?.days
       .map((day) => day.topics.length)
@@ -251,6 +244,16 @@ export const useDetailsSchedule = () => {
     disciplinesTotal && checkedTotal !== undefined
       ? Math.round((checkedTotal / disciplinesTotal) * 100)
       : 0;
+
+  const disciplinePerDay = useMemo(() => {
+    if (!schedule) {
+      return [];
+    }
+    return schedule.days.filter((day) => {
+      // Converte a string da data para um objeto Date antes de comparar
+      return new Date(day.date).toDateString() === selectedDay.toDateString();
+    });
+  }, [schedule, selectedDay]);
 
   const currentDayDisciplines =
     disciplinePerDay!.length > 0 ? disciplinePerDay![0].topics : [];
@@ -341,7 +344,6 @@ export const useDetailsSchedule = () => {
     todayCardRef,
     daysInMonth,
     daysInAYear,
-    disciplinePerDay,
     currentDayDisciplines,
     progress,
     toggleDiscipline: mutateStatusTopic,

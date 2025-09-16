@@ -34,7 +34,7 @@ export type ScheduleCardProps = {
 const ScheduleCard = ({ schedule }: { schedule: ScheduleCardProps }) => {
   const router = useRouter();
   const { getStatusText, getStatusColor } = useSchedule();
-  const { progress } = useDetailsSchedule();
+  const progress  = 50;
 
   return (
     <Card
