@@ -12,6 +12,7 @@ export type ScheduleCardProps = {
   studyStartDate: string;
   studyEndDate: string;
   status: string;
+  progress: string;
   days: [
     {
       id: string;
@@ -34,7 +35,6 @@ export type ScheduleCardProps = {
 const ScheduleCard = ({ schedule }: { schedule: ScheduleCardProps }) => {
   const router = useRouter();
   const { getStatusText, getStatusColor } = useSchedule();
-  const progress  = 50;
 
   return (
     <Card
@@ -55,12 +55,12 @@ const ScheduleCard = ({ schedule }: { schedule: ScheduleCardProps }) => {
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Progresso</span>
-          <span className="font-medium">{progress}%</span>
+          <span className="font-medium">{schedule.progress}%</span>
         </div>
-        <div className="w-full bg-muted rounded-full h-2">
+        <div className="w-full bg-background overflow-hidden py-1 rounded-full h-2 flex items-center justify-start">
           <div
-            className="bg-gradient-to-r from-white to-white rounded-full h-2 transition-all duration-300"
-            style={{ width: `${progress}%` }}
+            className="bg-gradient-to-r from-primary to-primary-foreground rounded-full h-2 transition-all duration-300"
+            style={{ width: `${schedule.progress}%`}}
           />
         </div>
       </div>
