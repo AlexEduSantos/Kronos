@@ -147,7 +147,7 @@ export const useDetailsSchedule = ({
   // MUTAÇÕES DO REACT QUERY
   // ======================
   const { mutate: mutateStatusTopic } = useMutation({
-    mutationFn: (topicId: string) => toggleStatusTopic(topicId),
+    mutationFn: ({ topicId, scheduleId }: { topicId: string; scheduleId: string }) => toggleStatusTopic(topicId, scheduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
       queryClient.refetchQueries({ queryKey: ["schedule", id] });

@@ -80,7 +80,12 @@ const ScheduleDetails = () => {
                     id={topic.id}
                     className="h-6 w-6 rounded-md border-border text-primary-foreground data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" // Estilo do checkbox
                     checked={topic.status}
-                    onCheckedChange={() => toggleDiscipline(topic.id)}
+                    onCheckedChange={() =>
+                      toggleDiscipline({
+                        topicId: topic.id,
+                        scheduleId: schedule!.id,
+                      })
+                    }
                   />
                   <div className="flex flex-col justify-between">
                     <Label

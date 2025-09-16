@@ -180,9 +180,9 @@ export async function updateTopic(topicId: string, data: any) {
   return await response.json();
 }
 
-export async function toggleStatusTopic(topicId: string) {
+export async function toggleStatusTopic(topicId: string, scheduleId: string) {
   const response = await fetch(
-    `${apiRoute}/schedule/topics/${topicId}/status`,
+    `${apiRoute}/schedule/${scheduleId}/topics/${topicId}/status`,
     {
       method: "PUT",
       headers: {
