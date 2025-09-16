@@ -251,16 +251,39 @@ export class ScheduleService {
     });
   }
 
-  async toggleTopicStatus(topicId: string) {
+  async toggleTopicStatus(topicId: string, scheduleId: string) {
     const topic = await this.prisma.topic.findUnique({
       where: { id: topicId },
     });
     if (!topic) {
       throw new NotFoundException('Tópico nao encontrado.');
     }
-    return await this.prisma.topic.update({
+    await this.prisma.topic.update({
       where: { id: topicId },
       data: { status: !topic.status },
     });
+
+    const schedule = await this.prisma.schedule.findUnique({
+      where: { id: scheduleId },
+      include: {
+        days: {
+          include: {
+            topics: true,
+          },
+        },
+      },
+    });
+    const totalTopics = schedule?.days.flatMap((day) => day.topics).length;
+    const completedTopics = schedule?.days
+      .flatMap((day) => day.topics)
+      .filter((topic) => topic.status).length;
+    if (completedTopics && totalTopics) {
+      const newProgress = Math.round((completedTopics / totalTopics) * 100);
+      // 4. Atualiza a coluna de progresso no banco de dados
+      await this.prisma.schedule.update({
+        where: { id: scheduleId },
+        data: { progress: newProgress.toString() },
+      });
+    }
   }
 }

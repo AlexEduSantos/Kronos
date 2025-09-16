@@ -36,7 +36,10 @@ export class ScheduleController {
   }
 
   @Get(':scheduleId')
-  async getScheduleById(@Request() req: any, @Param('scheduleId') scheduleId: string) {
+  async getScheduleById(
+    @Request() req: any,
+    @Param('scheduleId') scheduleId: string,
+  ) {
     return this.scheduleService.getScheduleById(scheduleId);
   }
 
@@ -157,12 +160,13 @@ export class ScheduleController {
     };
   }
 
-  @Put('topics/:topicId/status')
+  @Put(':scheduleId/topics/:topicId/status')
   async toggleTopicStatus(
     @Param('topicId', new ParseUUIDPipe()) topicId: string,
+    @Param('scheduleId', new ParseUUIDPipe()) scheduleId: string,
   ) {
     const statusUpdateTopic =
-      await this.scheduleService.toggleTopicStatus(topicId);
+      await this.scheduleService.toggleTopicStatus(topicId, scheduleId);
 
     return {
       message: 'Tópico atualizado com sucesso.',
