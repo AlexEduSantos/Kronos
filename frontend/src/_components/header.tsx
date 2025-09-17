@@ -25,10 +25,16 @@ const Header = () => {
   }
 
   return (
-    <div className="w-full h-20 bg-white py-2 px-6 flex justify-between items-center text-primary-foreground">
+    <div className="w-full h-20 bg-white py-2 px-6 grid grid-cols-5 items-center text-primary-foreground">
       <ChevronLeft className="h-6 w-6" onClick={() => router.back()} />
-      <h2 className="text-2xl font-bold text-center">{currentLinkName}</h2>
-      <Search className="h-6 w-6" />
+      <h2 className="col-span-3 w-full text-2xl font-bold text-center">
+        {currentLinkName}
+      </h2>
+      <div className="w-full flex justify-end">
+        {link.find((item) => item.href === pathname) && (
+          <Search className="h-6 w-6" />
+        )}
+      </div>
     </div>
   );
 };
