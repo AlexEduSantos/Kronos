@@ -4,6 +4,8 @@ import { ScheduleCardProps } from "@/_components/schedule-card";
 import {
   DaysFormData,
   daysFormSchema,
+  NewScheduleFormData,
+  newScheduleFormSchema,
   ScheduleFormData,
   scheduleFormSchema,
   TopicsFormData,
@@ -24,13 +26,16 @@ import {
   endOfDay,
   endOfMonth,
   endOfYear,
+  isBefore,
+  isPast,
+  isSameDay,
   startOfDay,
   startOfMonth,
   startOfYear,
 } from "date-fns";
 import { usePathname } from "next/navigation";
 import { use, useEffect, useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 export const useSchedule = () => {
@@ -147,7 +152,13 @@ export const useDetailsSchedule = ({
   // MUTAÇÕES DO REACT QUERY
   // ======================
   const { mutate: mutateStatusTopic } = useMutation({
-    mutationFn: ({ topicId, scheduleId }: { topicId: string; scheduleId: string }) => toggleStatusTopic(topicId, scheduleId),
+    mutationFn: ({
+      topicId,
+      scheduleId,
+    }: {
+      topicId: string;
+      scheduleId: string;
+    }) => toggleStatusTopic(topicId, scheduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
       queryClient.refetchQueries({ queryKey: ["schedule", id] });
@@ -357,5 +368,135 @@ export const useDetailsSchedule = ({
     selectedDay,
     hoursPerDay,
     setSelectedDay,
+  };
+};
+
+const weeakDaysFull = [
+  "Domingo",
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
+];
+const weeakDaysShort = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const hoursPerDay = Array.from(
+  { length: 24 },
+  (_, i) => `${i.toString().padStart(2, "0")}:00`
+);
+
+type MyFile = {
+  type: string;
+  size: number;
+  lastModified: number;
+  webkitRelativePath: string;
+  // add other required properties here
+};
+
+export const useNewScheduleViewModel = () => {
+  const [step, setStep] = useState(1);
+
+  const handleNextStep = async () => {
+    // Valida apenas os campos do passo atual
+    let isValid = false;
+    if (step === 1) {
+      isValid = await form.trigger(["name", "testDay"]);
+    } else if (step === 2) {
+      isValid = await form.trigger("document");
+    } else if (step === 3) {
+      isValid = await form.trigger([
+        "selectedWeekdays",
+        "studyStartDate",
+        "studyEndDate",
+        "studyStartTime",
+        "studyEndTime",
+      ]);
+    }
+
+    if (isValid) {
+      setStep(step + 1);
+    }
+  };
+
+  const form = useForm<NewScheduleFormData>({
+    resolver: zodResolver(newScheduleFormSchema),
+    defaultValues: {
+      name: "",
+      testDay: (() => {
+        const date = new Date();
+        date.setDate(date.getDate() + 1); // Default para amanhã
+        return date;
+      })(),
+      document: {} as File, // Começa com uma disciplina vazia
+      selectedWeekdays: [],
+      studyStartDate: new Date(),
+      studyEndDate: (() => {
+        const date = new Date();
+        date.setDate(date.getDate() + 1); // Default para amanhã
+        return date;
+      })(),
+      studyStartTime: "",
+      studyEndTime: "",
+    },
+  });
+
+  // Estado para controlar a tab ativa (você pode passá-la para o onSubmit)
+  const [currentTab, setCurrentTab] = useState<"manual" | "ia">("manual");
+  const handleWeekdayToggle = (day: string) => {
+    const currentWeekdays = form.getValues("selectedWeekdays");
+    if (currentWeekdays.includes(day)) {
+      form.setValue(
+        "selectedWeekdays",
+        currentWeekdays.filter((d) => d !== day),
+        { shouldValidate: true } // Para revalidar o campo
+      );
+    } else {
+      form.setValue("selectedWeekdays", [...currentWeekdays, day], {
+        shouldValidate: true,
+      });
+    }
+  };
+
+  const testDay = form.watch("testDay");
+  const studyRange = {
+    from: form.watch("studyStartDate"),
+    to: form.watch("studyEndDate"),
+  };
+  const studyStartTime = form.watch("studyStartTime");
+  const studyEndTime = form.watch("studyEndTime");
+
+  // Lógica para desabilitar datas no calendário
+  const isDisabledTestDay = (date: Date) =>
+    isPast(date) && !isSameDay(date, new Date());
+  const isDisabledStudyStartDate = (date: Date) =>
+    isPast(date) && !isSameDay(date, new Date());
+  const isDisabledStudyEndDate = (date: Date) =>
+    (studyRange.from && isBefore(date, studyRange.from)) || // Não pode ser antes da data de início
+    (testDay && !isBefore(date, testDay)) || // Não pode ser após a data da prova
+    (isPast(date) && !isSameDay(date, new Date())); // E também não pode ser no passado (exceto hoje)
+
+  // Função onSubmit
+  const onSubmit = async (data: NewScheduleFormData) => {
+    console.log("Dados do Formulário:", data);
+
+    alert("Cronograma gerado! Veja o console para os dados.");
+  };
+
+  return {
+    form,
+    hoursPerDay,
+    weeakDaysShort,
+    handleWeekdayToggle,
+    isDisabledTestDay,
+    isDisabledStudyStartDate,
+    isDisabledStudyEndDate,
+    onSubmit,
+    selectedWeekdays: form.watch("selectedWeekdays"), // Passe o watch aqui para re-renderizar
+    currentTab, // Exponha o estado da tab
+    setCurrentTab, // Exponha a função para mudar a tab
+    step,
+    setStep,
+    handleNextStep,
   };
 };

@@ -1,7 +1,6 @@
 // src/schemas/scheduleSchema.ts
 import { date, z } from "zod";
 
-// Define o schema principal para o formulário de cronograma
 export const newScheduleFormSchema = z
   .object({
     name: z.string().min(1, "Nome do cronograma é obrigatório."),
@@ -10,18 +9,9 @@ export const newScheduleFormSchema = z
         error: "A data da prova é obrigatória.",
       })
       .min(new Date(), "A data da prova não pode ser no passado."), // Garante que a data não seja anterior ao dia atual
-    disciplines: z
-      .array(
-        z.object({
-          name: z.string().min(1, "O nome da disciplina é obrigatório."),
-          weight: z
-            .number()
-            .min(0, "O peso deve ser no mínimo 0.")
-            .max(100, "O peso deve ser no máximo 100."),
-        })
-      )
-      .optional(), // Permite que o campo seja opcional, mas se estiver presente, deve ter pelo menos uma disciplina
-    aiInputText: z.string().optional(), // Campo de texto opcional
+    document: z
+      .file()
+      .mime("application/pdf", { error: "O arquivo deve ser PDF." }),
     selectedWeekdays: z
       .array(z.string())
       .min(1, "Selecione pelo menos um dia de estudo."),
@@ -59,7 +49,6 @@ export const newScheduleFormSchema = z
     }
   );
 
-// Define o tipo TypeScript a partir do schema Zod
 export type NewScheduleFormData = z.infer<typeof newScheduleFormSchema>;
 
 export const topicsFormSchema = z.object({
