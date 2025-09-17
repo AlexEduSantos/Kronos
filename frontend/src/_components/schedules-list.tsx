@@ -66,7 +66,7 @@ const ScheduleList = () => {
         <ScheduleCard key={schedule.id} schedule={schedule} />
       ))}
       <Button
-        className="bg-transparent shadow-none border-dashed border border-primary-foreground h-30 opacity-80"
+        className="bg-transparent shadow-none border-dashed border border-muted-foreground text-muted-foreground h-30"
         onClick={() => router.push("/new-schedule")}
       >
         <PlusIcon />

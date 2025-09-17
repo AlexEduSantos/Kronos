@@ -38,7 +38,7 @@ const AddTopicButton = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="shadow text-white" variant={"secondary"}>
+        <Button className="shadow" >
           <PlusIcon />
           Adicionar Novo Tópico
         </Button>

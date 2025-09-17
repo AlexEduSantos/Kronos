@@ -12,7 +12,7 @@ const RegisterForm = () => {
   return (
     <>
       <Card className="w-full md:w-1/3 p-2 pb-4 flex flex-col gap-2">
-        <CardTitle className="text-center text-primary-foreground">
+        <CardTitle className="text-center">
           <h2 className="text-2xl font-bold">Faça seu Registro</h2>
           <p className="text-sm font-normal">Vamos iniciar sua jornada!</p>
         </CardTitle>
@@ -32,7 +32,7 @@ const RegisterForm = () => {
                   <div className="flex flex-col gap-1">
                     <Label
                       htmlFor="name"
-                      className="text-md font-light text-primary-foreground/50"
+                      className="text-md font-light"
                     >
                       Nome
                     </Label>
@@ -40,7 +40,7 @@ const RegisterForm = () => {
                       {...field}
                       type="text"
                       id="name"
-                      className="border border-border/20"
+                      className="border border-border"
                     />
                   </div>
                 )}
@@ -52,7 +52,7 @@ const RegisterForm = () => {
                   <div className="flex flex-col gap-1">
                     <Label
                       htmlFor="email"
-                      className="text-md font-light text-primary-foreground/50"
+                      className="text-md font-light "
                     >
                       Email
                     </Label>
@@ -60,7 +60,7 @@ const RegisterForm = () => {
                       {...field}
                       type="email"
                       id="email"
-                      className="border border-border/20"
+                      className="border border-border"
                     />
                   </div>
                 )}
@@ -72,7 +72,7 @@ const RegisterForm = () => {
                   <div className="flex flex-col gap-1">
                     <Label
                       htmlFor="password"
-                      className="text-md font-light text-primary-foreground/50"
+                      className="text-md font-light "
                     >
                       Senha
                     </Label>
@@ -80,7 +80,7 @@ const RegisterForm = () => {
                       {...field}
                       type="password"
                       id="password"
-                      className="border border-border/20"
+                      className="border border-border"
                     />
                   </div>
                 )}
@@ -92,7 +92,7 @@ const RegisterForm = () => {
                   <div className="flex flex-col gap-1">
                     <Label
                       htmlFor="confirmPassword"
-                      className="text-md font-light text-primary-foreground/50"
+                      className="text-md font-light "
                     >
                       Confirmar Senha
                     </Label>
@@ -100,7 +100,7 @@ const RegisterForm = () => {
                       {...field}
                       type="password"
                       id="confirmPassword"
-                      className="border border-border/20"
+                      className="border border-border"
                     />
                   </div>
                 )}
@@ -110,7 +110,7 @@ const RegisterForm = () => {
                   Registrar
                 </Button>
                 <Button
-                  className="w-1/2 border border-border/20"
+                  className="w-1/2 border border-border"
                   type="reset"
                   variant="ghost"
                 >

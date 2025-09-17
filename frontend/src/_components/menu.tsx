@@ -10,7 +10,7 @@ const FooterMenu = () => {
     { name: "Settings", href: "/settings", icon: SettingsIcon },
   ];
   return (
-    <div className="w-full h-16 fixed bottom-0 left-0 right-0 bg-white flex items-center justify-around px-6 text-secondary">
+    <div className="w-full h-16 fixed bottom-0 left-0 right-0 bg-card flex items-center justify-around px-6 text-card-foreground">
       {link.map((item) => {
         const isActive = pathname === item.href;
         return (
@@ -18,7 +18,7 @@ const FooterMenu = () => {
             key={item.name}
             href={item.href}
             className={`flex flex-col items-center p-3 rounded-full ${
-              isActive ? "bg-primary" : ""
+              isActive ? "bg-primary text-primary-foreground" : ""
             }`}
           >
             <item.icon className="h-6 w-6" />

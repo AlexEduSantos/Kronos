@@ -14,7 +14,7 @@ const LoginForm = () => {
   return (
     <>
       <Card className="w-full md:w-1/3 p-2 pb-4 flex flex-col gap-2">
-        <CardTitle className="text-center text-primary-foreground">
+        <CardTitle className="text-center ">
           <h2 className="text-2xl font-bold">Faça seu Login</h2>
           <p className="text-sm font-normal">Bem-vindo de volta!</p>
         </CardTitle>
@@ -34,7 +34,7 @@ const LoginForm = () => {
                   <div className="flex flex-col gap-1">
                     <Label
                       htmlFor="email"
-                      className="text-md font-light text-primary-foreground/50"
+                      className="text-md font-light"
                     >
                       Email
                     </Label>
@@ -42,7 +42,7 @@ const LoginForm = () => {
                       {...field}
                       type="email"
                       id="email"
-                      className="border border-border/20"
+                      className="border border-border"
                     />
                   </div>
                 )}
@@ -54,7 +54,7 @@ const LoginForm = () => {
                   <div className="flex flex-col gap-1">
                     <Label
                       htmlFor="password"
-                      className="text-md font-light text-primary-foreground/50"
+                      className="text-md font-light"
                     >
                       Senha
                     </Label>
@@ -62,14 +62,14 @@ const LoginForm = () => {
                       {...field}
                       type="password"
                       id="password"
-                      className="border border-border/20"
+                      className="border border-border"
                     />
                   </div>
                 )}
               />
               <div className="w-full text-end">
                 <Link href="/forgot-password">
-                  <p className="text-sm md:text-xs text-primary-foreground">
+                  <p className="text-sm md:text-xs text-primary cursor-pointer">
                     Esqueceu sua senha?
                   </p>
                 </Link>
@@ -79,7 +79,7 @@ const LoginForm = () => {
                   {isSubmitting ? "Entrando..." : "Entrar"}
                 </Button>
                 <Button
-                  className="w-1/2 border border-border/20"
+                  className="w-1/2 border border-border"
                   type="reset"
                   variant="ghost"
                 >

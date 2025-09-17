@@ -59,7 +59,7 @@ const ScheduleCard = ({ schedule }: { schedule: ScheduleCardProps }) => {
         </div>
         <div className="w-full bg-background overflow-hidden py-1 rounded-full h-2 flex items-center justify-start">
           <div
-            className="bg-gradient-to-r from-primary to-primary-foreground rounded-full h-2 transition-all duration-300"
+            className="bg-gradient-to-r from-primary to-accent rounded-full h-2 transition-all duration-300"
             style={{ width: `${schedule.progress}%`}}
           />
         </div>

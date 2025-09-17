@@ -46,7 +46,7 @@ const NewSchedule = () => {
         className="w-full flex flex-col gap-2 p-2"
       >
         {/* Nome e data */}
-        <Card>
+        <Card className="p-2">
           <CardContent className="p-0 flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <div
@@ -56,10 +56,10 @@ const NewSchedule = () => {
                 <ChevronLeftIcon />
               </div>
               <div>
-                <h2 className="text-2xl text-center text-primary-foreground font-bold">
+                <h2 className="text-2xl text-center font-bold">
                   Informações do Cronograma
                 </h2>
-                <p className="text-muted text-md text-center">
+                <p className="text-muted-foreground text-md text-center">
                   Vamos começar com as informações básicas do seu cronograma
                 </p>
               </div>
@@ -93,7 +93,7 @@ const NewSchedule = () => {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-between font-normal bg-input border border-background min-h-12 text-foreground shadow-none",
+                            "w-full justify-between font-normal border border-background min-h-12 text-foreground shadow-none",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -121,7 +121,7 @@ const NewSchedule = () => {
             />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="p-2">
           <CardContent className="p-0 flex flex-col gap-4">
             <FormField
               control={form.control}
@@ -180,7 +180,7 @@ const NewSchedule = () => {
             />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="p-2">
           <CardContent className="p-0 flex flex-col gap-4">
             <h2 className="text-muted-foreground text-sm font-semibold">
               Dias de Estudo
@@ -232,7 +232,7 @@ const NewSchedule = () => {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full justify-between font-normal bg-input border border-border/20 text-foreground min-h-12",
+                              "w-full justify-between font-normal border border-border shadow-none text-foreground min-h-12",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -289,7 +289,7 @@ const NewSchedule = () => {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full justify-between font-normal bg-input border border-border/20 text-foreground min-h-12",
+                              "w-full justify-between font-normal shadow-none border border-border text-foreground min-h-12",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -339,7 +339,7 @@ const NewSchedule = () => {
         </Card>
 
         {/* Horário de Estudo */}
-        <Card>
+        <Card className="p-2">
           <CardContent className="p-0 flex flex-col gap-4">
             <h2 className="text-muted-foreground text-sm font-semibold">
               Horário de Estudo
@@ -356,7 +356,7 @@ const NewSchedule = () => {
                         {...field}
                         onValueChange={(value) => field.onChange(value)}
                       >
-                        <SelectTrigger className="w-full shadow-none border border-border/20 text-foregrounds  min-h-12">
+                        <SelectTrigger className="w-full shadow-none border border-border min-h-12">
                           <span className="text-foreground">
                             {field.value || "Selecione o horário"}
                           </span>
@@ -385,7 +385,7 @@ const NewSchedule = () => {
                         {...field}
                         onValueChange={(value) => field.onChange(value)}
                       >
-                        <SelectTrigger className="w-full shadow-none border border-border/20 text-foregrounds  min-h-12">
+                        <SelectTrigger className="w-full shadow-none border border-border min-h-12">
                           <span className="text-foreground">
                             {field.value || "Selecione o horário"}
                           </span>
@@ -406,7 +406,7 @@ const NewSchedule = () => {
             </div>
           </CardContent>
         </Card>
-        <Button type="submit" variant="secondary">
+        <Button type="submit" className="rounded-lg">
           Criar Cronograma
         </Button>
       </form>

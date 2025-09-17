@@ -20,7 +20,7 @@ const CalendarHorizontal = ({
         className="flex overflow-x-auto scrollbar-hide gap-2 py-1"
         ref={scrollContainerRef}
       >
-        <div className="min-w-1/3 min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary shadow-none"></div>
+        <div className="min-w-1/3 min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2  shadow-none"></div>
         {daysInAYear.map((day, index) => {
           const dia = day.getDate();
           const mes = format(day, "LLL", { locale: ptBR });
@@ -36,11 +36,11 @@ const CalendarHorizontal = ({
                   ? todayCardRef
                   : null
               }
-              className={`border-none min-w-[60px] min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2 text-secondary shadow-md
+              className={` min-w-[60px] min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2
                 ${
                   selectedDay.toDateString() === day.toDateString()
                     ? "bg-primary text-primary-foreground"
-                    : "bg-white text-secondary"
+                    : ""
                 }
               `}
               onClick={() => {

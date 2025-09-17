@@ -40,14 +40,14 @@ const ScheduleDetails = () => {
       <Card className="p-0">
         <CardHeader className="p-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="p-0 text-2xl text-primary-foreground font-bold">
+            <CardTitle className="p-0 text-2xl font-bold">
               {schedule?.name}
             </CardTitle>
             <Badge variant={getStatusColor(schedule!.status)}>
               {getStatusText(schedule!.status)}
             </Badge>
           </div>
-          <CardDescription className="text-md text-muted-foreground">
+          <CardDescription className="text-md ">
             Dia da prova: {format(schedule?.testDay as string, "dd/MM/yyyy")}
           </CardDescription>
         </CardHeader>
@@ -55,12 +55,8 @@ const ScheduleDetails = () => {
       {/* Seção de Progresso */}
       <Card className="flex flex-col gap-3 p-4 shadow-md bg-card border-none py-2">
         <div className="flex justify-between items-center">
-          <p className="text-sm text-primary-foreground font-bold">
-            Progresso Geral
-          </p>
-          <p className="text-lg font-bold text-primary-foreground">
-            {progress}%
-          </p>
+          <p className="text-sm  font-bold">Progresso Geral</p>
+          <p className="text-lg font-bold ">{progress}%</p>
         </div>
         <Progress value={progress} className="h-2" />
         {/* Altura menor para barra */}
@@ -88,7 +84,7 @@ const ScheduleDetails = () => {
                 <div className="flex gap-3 items-center">
                   <Checkbox
                     id={topic.id}
-                    className="h-6 w-6 rounded-md border-border text-primary-foreground data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" // Estilo do checkbox
+                    className="h-6 w-6 rounded-md border-border data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" // Estilo do checkbox
                     checked={topic.status}
                     onCheckedChange={() =>
                       toggleDiscipline({
@@ -101,7 +97,7 @@ const ScheduleDetails = () => {
                     <Label
                       htmlFor={topic.id}
                       className={cn(
-                        "text-lg font-semibold text-primary-foreground cursor-pointer",
+                        "text-lg font-semibold cursor-pointer",
                         topic.status && "line-through text-muted-foreground"
                       )}
                     >
@@ -124,14 +120,14 @@ const ScheduleDetails = () => {
                 <div className="flex gap-1 items-center">
                   <Button
                     variant="ghost"
-                    className="h-12 w-12 p-1 text-green-500 opacity-70 hover:opacity-100" // Botões menores e mais discretos
+                    className="h-12 w-12 p-1 text-success hover:opacity-100" // Botões menores e mais discretos
                   >
                     <PenBoxIcon className="stroke-1" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 p-1 text-destructive opacity-70 hover:opacity-100" // Botões menores e mais discretos
+                    className="h-8 w-8 p-1 text-destructive  hover:opacity-100" // Botões menores e mais discretos
                   >
                     <Trash2Icon className="stroke-1" />
                   </Button>

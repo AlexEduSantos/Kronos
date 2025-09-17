@@ -10,11 +10,11 @@ const badgeVariants = cva(
     variants: {
       variant: {
         active:
-          "border-transparent bg-green-300 text-primary-foreground [a&]:hover:bg-primary/90",
+          "border-transparent bg-success text-success-foreground [a&]:hover:bg-primary/90",
         focus: "bg-primary text-primary-foreground border-transparent",
         finished: "bg-white text-primary-foreground",
         cancelled: "bg-red-300 text-white border-transparent",
-        paused: "bg-blue-300 text-white border-transparent",
+        paused: "bg-warning text-white border-transparent",
       },
     },
     defaultVariants: {
