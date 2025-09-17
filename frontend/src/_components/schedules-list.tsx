@@ -1,10 +1,11 @@
 "use client";
 import { useSchedule } from "@/_viewmodels/useSchedule";
 import ScheduleCard, { ScheduleCardProps } from "./schedule-card";
-import { SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon } from "lucide-react";
 import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 const ScheduleList = () => {
   const {
@@ -15,6 +16,8 @@ const ScheduleList = () => {
     statusFilter,
     setStatusFilter,
   } = useSchedule();
+
+  const router = useRouter();
 
   if (isScheduleLoading) return <div>Loading...</div>;
 
@@ -62,6 +65,13 @@ const ScheduleList = () => {
       {filteredSchedules?.map((schedule: ScheduleCardProps) => (
         <ScheduleCard key={schedule.id} schedule={schedule} />
       ))}
+      <Button
+        className="bg-transparent shadow-none border-dashed border border-primary-foreground h-30 opacity-80"
+        onClick={() => router.push("/new-schedule")}
+      >
+        <PlusIcon />
+        <p>Criar cronograma</p>
+      </Button>
     </div>
   );
 };
