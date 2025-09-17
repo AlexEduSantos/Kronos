@@ -1,8 +1,8 @@
 "use client";
 
-import { useDetailsSchedule } from "@/_viewmodels/useSchedule";
+import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
 import { Skeleton } from "./ui/skeleton";
-import { Card } from "./ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { format } from "date-fns";
 import { Progress } from "./ui/progress";
 import CalendarHorizontal from "./horizontal-calendar";
@@ -13,6 +13,7 @@ import { Button } from "./ui/button";
 import { PenBoxIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import AddTopicButton from "./add-topic-button";
+import { Badge } from "./ui/badge";
 
 const ScheduleDetails = () => {
   const [selectedDay, setSelectedDay] = useState<Date>(new Date());
@@ -25,6 +26,8 @@ const ScheduleDetails = () => {
     toggleDiscipline,
   } = useDetailsSchedule({ selectedDay, setSelectedDay });
 
+  const { getStatusText, getStatusColor } = useSchedule();
+
   if (isLoadingSchedule)
     return (
       <div className="p-2">
@@ -34,13 +37,20 @@ const ScheduleDetails = () => {
 
   return (
     <div className="flex flex-col gap-2 w-full p-2 sm:p-0">
-      <Card className="flex flex-col gap-3 p-4 shadow-md bg-card border-none py-2">
-        <h2 className="text-2xl font-extrabold text-primary-foreground mb-1">
-          {schedule?.name}
-        </h2>
-        <p className="text-md text-muted-foreground">
-          Dia da prova: {format(schedule?.testDay as string, "dd/MM/yyyy")}
-        </p>
+      <Card className="p-0">
+        <CardHeader className="p-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="p-0 text-2xl text-primary-foreground font-bold">
+              {schedule?.name}
+            </CardTitle>
+            <Badge variant={getStatusColor(schedule!.status)}>
+              {getStatusText(schedule!.status)}
+            </Badge>
+          </div>
+          <CardDescription className="text-md text-muted-foreground">
+            Dia da prova: {format(schedule?.testDay as string, "dd/MM/yyyy")}
+          </CardDescription>
+        </CardHeader>
       </Card>
       {/* Seção de Progresso */}
       <Card className="flex flex-col gap-3 p-4 shadow-md bg-card border-none py-2">
@@ -52,7 +62,7 @@ const ScheduleDetails = () => {
             {progress}%
           </p>
         </div>
-        <Progress value={progress} className="h-2" />{" "}
+        <Progress value={progress} className="h-2" />
         {/* Altura menor para barra */}
       </Card>
       {/* Calendário Horizontal */}
