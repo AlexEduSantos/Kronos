@@ -34,29 +34,25 @@ const ScheduleList = () => {
       </div>
       <div className="w-full grid grid-cols-4 gap-2">
         <Button
-          variant={statusFilter === "all" ? "secondary" : "outline"}
-          size="sm"
+          variant={statusFilter === "all" ? "default" : "outline"}
           onClick={() => setStatusFilter("all")}
         >
           Todos
         </Button>
         <Button
-          variant={statusFilter === "Active" ? "secondary" : "outline"}
-          size="sm"
+          variant={statusFilter === "Active" ? "default" : "outline"}
           onClick={() => setStatusFilter("Active")}
         >
           Ativos
         </Button>
         <Button
-          variant={statusFilter === "Finished" ? "secondary" : "outline"}
-          size="sm"
+          variant={statusFilter === "Finished" ? "default" : "outline"}
           onClick={() => setStatusFilter("Finished")}
         >
           Finalizados
         </Button>
         <Button
-          variant={statusFilter === "Paused" ? "secondary" : "outline"}
-          size="sm"
+          variant={statusFilter === "Paused" ? "default" : "outline"}
           onClick={() => setStatusFilter("Paused")}
         >
           Pausados

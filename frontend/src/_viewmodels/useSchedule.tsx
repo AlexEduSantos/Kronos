@@ -407,8 +407,7 @@ export const useNewScheduleViewModel = () => {
     } else if (step === 3) {
       isValid = await form.trigger([
         "selectedWeekdays",
-        "studyStartDate",
-        "studyEndDate",
+        "studyRange",
         "studyStartTime",
         "studyEndTime",
       ]);
@@ -430,12 +429,14 @@ export const useNewScheduleViewModel = () => {
       })(),
       document: {} as File, // Começa com uma disciplina vazia
       selectedWeekdays: [],
-      studyStartDate: new Date(),
-      studyEndDate: (() => {
-        const date = new Date();
-        date.setDate(date.getDate() + 1); // Default para amanhã
-        return date;
-      })(),
+      studyRange: {
+        from: new Date(),
+        to: (() => {
+          const date = new Date();
+          date.setDate(date.getDate() + 1);
+          return date;
+        })(),
+      },
       studyStartTime: "",
       studyEndTime: "",
     },
@@ -460,8 +461,8 @@ export const useNewScheduleViewModel = () => {
 
   const testDay = form.watch("testDay");
   const studyRange = {
-    from: form.watch("studyStartDate"),
-    to: form.watch("studyEndDate"),
+    from: form.watch("studyRange.from"),
+    to: form.watch("studyRange.to"),
   };
   const studyStartTime = form.watch("studyStartTime");
   const studyEndTime = form.watch("studyEndTime");

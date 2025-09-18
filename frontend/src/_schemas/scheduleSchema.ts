@@ -15,26 +15,29 @@ export const newScheduleFormSchema = z
     selectedWeekdays: z
       .array(z.string())
       .min(1, "Selecione pelo menos um dia de estudo."),
-    studyStartDate: z
-      .date({
-        error: "A data de início do estudo é obrigatória.",
+    studyRange: z
+      .object({
+        from: z.date({
+          error: "A data de início do estudo é obrigatória.",
+        }),
+        to: z.date({
+          error: "A data final do estudo é obrigatória.",
+        }),
       })
-      .min(new Date(), "A data de início não pode ser no passado."), // Garante que não seja no passado
-    studyEndDate: z.date({
-      error: "A data final do estudo é obrigatória.",
-    }),
+      .refine((data) => data.to >= data.from, {
+        message:
+          "A data final do estudo não pode ser anterior à data de início.",
+        path: ["to"], // Error path points to the 'to' field
+      }),
     studyStartTime: z.string().min(1, "Horário de início é obrigatório."),
     studyEndTime: z.string().min(1, "Horário final é obrigatório."),
   })
-  .refine((data) => data.studyEndDate >= data.studyStartDate, {
-    message: "A data final do estudo não pode ser anterior à data de início.",
-    path: ["studyEndDate"], // Caminho do campo para o erro
-  })
+
   .refine(
     (data) => {
       // Validação de horário, se a data for a mesma, o horário de início deve ser antes do final
-      const startDate = data.studyStartDate.toDateString();
-      const endDate = data.studyEndDate.toDateString();
+      const startDate = data.studyRange.from.toDateString();
+      const endDate = data.studyRange.to.toDateString();
 
       if (startDate === endDate) {
         // Assume formato "HH:MM" e compara como string (simples) ou converte para número

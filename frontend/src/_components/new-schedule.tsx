@@ -14,12 +14,7 @@ import {
 import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/_lib/utils";
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  FileTextIcon,
-  UploadIcon,
-} from "lucide-react";
+import { ChevronDownIcon, FileTextIcon, UploadIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { Label } from "./ui/label";
 import { ptBR } from "date-fns/locale";
@@ -48,21 +43,13 @@ const NewSchedule = () => {
         {/* Nome e data */}
         <Card className="p-2">
           <CardContent className="p-0 flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <div
-                className="p-1 shadow-sm rounded-full"
-                onClick={() => router.back()}
-              >
-                <ChevronLeftIcon />
-              </div>
-              <div>
-                <h2 className="text-2xl text-center font-bold">
-                  Informações do Cronograma
-                </h2>
-                <p className="text-muted-foreground text-md text-center">
-                  Vamos começar com as informações básicas do seu cronograma
-                </p>
-              </div>
+            <div className="flex flex-col items-center gap-2">
+              <h2 className="text-2xl text-center font-bold">
+                Informações do Cronograma
+              </h2>
+              <p className="text-muted-foreground text-md text-center">
+                Vamos começar com as informações básicas do seu cronograma
+              </p>
             </div>
             <FormField
               control={form.control}
@@ -106,13 +93,31 @@ const NewSchedule = () => {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full p-0 border-none shadow-xl">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        autoFocus
-                      />
+                    <PopoverContent className="w-screen p-2 bg-transparent border-none shadow-none">
+                      <div className="flex items-center justify-center w-full h-fit bg-card p-2 ring ring-primary rounded-md shadow-md">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          captionLayout="dropdown"
+                          autoFocus
+                          startMonth={new Date()}
+                          endMonth={new Date(2050, 12)}
+                          locale={ptBR}
+                          classNames={{
+                            month_caption: "text-muted-foreground capitalize",
+                            months_dropdown: "text-foreground capitalize",
+                            week: "w-full flex justify-between items-center gap-2",
+                            weekday: "w-full capitalize text-xs",
+                            day: "w-full flex items-center justify-center rounded-full p-2",
+                            today:
+                              "rounded-full bg-secondary text-secondary-foreground",
+                            outside: "text-muted-foreground/50",
+                            selected:
+                              "bg-primary text-primary-foreground rounded-full",
+                          }}
+                        />
+                      </div>
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -121,7 +126,9 @@ const NewSchedule = () => {
             />
           </CardContent>
         </Card>
-        <Card className="p-2">
+
+        {/* Documento */}
+        <Card className="p-2 py-4">
           <CardContent className="p-0 flex flex-col gap-4">
             <FormField
               control={form.control}
@@ -154,9 +161,9 @@ const NewSchedule = () => {
                         asChild
                       >
                         <Label htmlFor="file-upload">
-                          <div className="p-2 bg-background rounded-full">
+                          <span className="p-2 bg-primary text-primary-foreground rounded-full">
                             <UploadIcon />
-                          </div>
+                          </span>
                           {value?.name ? (
                             <div className="flex items-center gap-2">
                               <FileTextIcon className="text-primary-foreground" />
@@ -180,16 +187,17 @@ const NewSchedule = () => {
             />
           </CardContent>
         </Card>
-        <Card className="p-2">
-          <CardContent className="p-0 flex flex-col gap-4">
-            <h2 className="text-muted-foreground text-sm font-semibold">
-              Dias de Estudo
-            </h2>
+
+        {/* Dias de Estudo */}
+        <Card className="p-2 py-4">
+          <CardContent className="p-0 flex flex-col gap-2">
             <FormField
               control={form.control}
               name="selectedWeekdays"
               render={() => (
                 <FormItem>
+                  <FormLabel>Dias de Estudo</FormLabel>
+                  <FormDescription>Selecione os dias de estudo</FormDescription>
                   <FormControl>
                     <div className="flex flex-wrap gap-2 justify-between">
                       {weeakDaysShort.map((day, index) => (
@@ -202,10 +210,10 @@ const NewSchedule = () => {
                               : "outline"
                           }
                           className={cn(
-                            "border text-xs rounded-full aspect-square min-w-[40px] h-10 flex items-center justify-center cursor-pointer",
+                            " text-xs rounded-full aspect-square shadow-md min-w-[40px] h-10 flex items-center justify-center cursor-pointer",
                             selectedWeekdays.includes(day)
-                              ? "bg-primary text-primary-foreground border-transparent hover:bg-primary/90"
-                              : "bg-white text-foreground border-border/20 hover:bg-accent"
+                              ? "bg-primary text-primary-foreground hover:bg-primary"
+                              : "bg-white text-foreground hover:bg-accent"
                           )}
                           onClick={() => handleWeekdayToggle(day)}
                         >
@@ -222,10 +230,10 @@ const NewSchedule = () => {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-muted-foreground mt-4">
               <FormField
                 control={form.control}
-                name="studyStartDate"
+                name="studyRange"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col flex-grow w-full sm:w-auto">
-                    <FormLabel className="text-xs">Início:</FormLabel>
+                  <FormItem className="flex flex-col flex-grow w-full  sm:w-auto">
+                    <FormLabel className="">Início:</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -233,101 +241,62 @@ const NewSchedule = () => {
                             variant="outline"
                             className={cn(
                               "w-full justify-between font-normal border border-border shadow-none text-foreground min-h-12",
-                              !field.value && "text-muted-foreground"
+                              !field.value?.from && "text-muted-foreground" // Use 'from' para verificar se há valor
                             )}
                           >
-                            {field.value ? (
-                              field.value.toLocaleDateString("pt-BR")
+                            {field.value?.from ? (
+                              // Exibe o intervalo de datas, se ambas existirem
+                              <span>
+                                {field.value.from.toLocaleDateString("pt-BR")}
+                                {field.value.to
+                                  ? ` - ${field.value.to.toLocaleDateString(
+                                      "pt-BR"
+                                    )}`
+                                  : ""}
+                              </span>
                             ) : (
-                              <span>Selecione a data</span>
+                              <span>Selecione o intervalo de estudo</span>
                             )}
                             <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-0 border-none shadow-xl"
-                        align="start"
-                      >
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={isDisabledStudyStartDate}
-                          locale={ptBR}
-                          autoFocus
-                          captionLayout="dropdown"
-                          classNames={{
-                            month_caption: "text-muted-foreground capitalize",
-                            months_dropdown: "text-foreground capitalize",
-                            week: "w-full flex justify-between items-center gap-2",
-                            weekday: "w-full capitalize text-xs",
-                            day: "w-full flex items-center justify-center rounded-full p-2",
-                            today:
-                              "rounded-full bg-primary/40 text-primary-foreground",
-                            outside: "text-muted-foreground/50",
-                            selected:
-                              "bg-primary text-primary-foreground rounded-full",
-                          }}
-                          className="w-full p-2"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="studyEndDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col flex-grow w-full sm:w-auto">
-                    <FormLabel className="text-xs">Final:</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-between font-normal shadow-none border border-border text-foreground min-h-12",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              field.value.toLocaleDateString("pt-BR")
-                            ) : (
-                              <span>Selecione a data</span>
-                            )}
-                            <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-0 border-none shadow-xl"
-                        align="end"
-                      >
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={isDisabledStudyEndDate}
-                          locale={ptBR}
-                          autoFocus
-                          captionLayout="dropdown"
-                          classNames={{
-                            month_caption: "text-muted-foreground capitalize",
-                            months_dropdown: "text-foreground capitalize",
-                            week: "w-full flex justify-between items-center gap-2",
-                            weekday: "w-full capitalize text-xs",
-                            day: "w-full flex items-center justify-center rounded-full p-2",
-                            today:
-                              "rounded-full bg-primary/40 text-primary-foreground",
-                            outside: "text-muted-foreground/50",
-                            selected:
-                              "bg-primary text-primary-foreground rounded-full",
-                          }}
-                          className="w-full p-2"
-                        />
+                      <PopoverContent className="w-screen p-2 bg-transparent border-none shadow-none">
+                        <div className="flex items-center justify-center w-full h-fit bg-card p-2 ring ring-primary rounded-md shadow-md">
+                          <Calendar
+                            mode="range"
+                            selected={field.value}
+                            required
+                            onSelect={field.onChange}
+                            disabled={(date) => date < new Date()}
+                            locale={ptBR}
+                            autoFocus
+                            fixedWeeks={true}
+                            captionLayout="dropdown"
+                            classNames={{
+                              root: "w-full bg-blue-500",
+                              month_caption: "text-muted-foreground capitalize",
+                              months_dropdown: "text-foreground capitalize",
+                              week: "w-full flex items-center",
+                              weekday: "w-full capitalize text-xs",
+                              day: "w-full flex items-center justify-center ",
+                              today:
+                                "bg-secondary text-secondary-foreground rounded-full",
+                              outside: "text-muted-foreground",
+
+                              // Estilos para o range
+                              range_start: "", // Início do range
+                              range_end: "", // Fim do range
+                              range_middle: "", // Meio do range, com uma cor mais clara
+
+                              // A classe 'selected' é aplicada a ambos os extremos do range.
+                              // Garanta que ela não sobrescreva o border-radius ou background.
+                              // Podemos deixá-la mais genérica ou específica se houver conflito.
+                              // Uma abordagem é ter o 'selected' como um fallback visual se não for um range.
+                              selected: "",
+                            }}
+                          />
+                        </div>
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -339,12 +308,10 @@ const NewSchedule = () => {
         </Card>
 
         {/* Horário de Estudo */}
-        <Card className="p-2">
+        <Card className="p-2 py-4">
           <CardContent className="p-0 flex flex-col gap-4">
-            <h2 className="text-muted-foreground text-sm font-semibold">
-              Horário de Estudo
-            </h2>
-            <div className="flex flex-col sm:flex-row items-center gap-6 text-muted-foreground">
+            <h2 className="text-sm font-semibold">Horário de Estudo</h2>
+            <div className="flex  sm:flex-row items-center gap-6 text-muted-foreground">
               <FormField
                 control={form.control}
                 name="studyStartTime"
