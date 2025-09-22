@@ -2,7 +2,12 @@
 import { Form, FormField } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  DialogClose,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { useDetailsSchedule } from "@/_viewmodels/useSchedule";
 
 const NewTopicForm = ({
@@ -68,7 +73,9 @@ const NewTopicForm = ({
                 />
               )}
             />
-            <Button type="submit">Adicionar</Button>
+            <DialogClose asChild>
+              <Button type="submit">Adicionar</Button>
+            </DialogClose>
           </form>
         </Form>
       </DialogHeader>

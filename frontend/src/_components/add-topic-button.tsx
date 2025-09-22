@@ -43,7 +43,7 @@ const AddTopicButton = ({
           Adicionar Novo Tópico
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-white border-none">{teste()}</DialogContent>
+      <DialogContent className="bg-white border-none w-full">{teste()}</DialogContent>
     </Dialog>
   );
 };

@@ -18,10 +18,10 @@ const CalendarHorizontal = ({
   return (
     <div className="w-full flex gap-2 relative">
       <div
-        className="flex overflow-x-auto scrollbar-hide gap-2 py-1"
+        className="flex overflow-x-auto scrollbar-hide gap-2 "
         ref={scrollContainerRef}
       >
-        <div className="min-w-1/3 min-h-[70px] flex flex-col gap-0.5 items-center justify-between p-2  shadow-none"></div>
+        <div className="min-w-1/3 min-h-[70px] flex flex-col gap-0.5 items-center justify-between shadow-none"></div>
         {daysInAYear.map((day, index) => {
           const dia = day.getDate();
           const mes = format(day, "LLL", { locale: ptBR });

@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "./ui/skeleton";
 
 const ScheduleList = () => {
   const {
@@ -19,7 +20,18 @@ const ScheduleList = () => {
 
   const router = useRouter();
 
-  if (isScheduleLoading) return <div>Loading...</div>;
+  if (isScheduleLoading)
+    return (
+      <div className="flex flex-col gap-2 p-2 w-full">
+        <Skeleton className="w-full h-10 bg-white rounded-md" />
+        <div className="w-full flex gap-2">
+          {Array.from({ length: 4 }, (_, i) => i).map((i) => (
+            <Skeleton key={i} className="w-full h-10 bg-white rounded-md" />
+          ))}
+        </div>
+        <Skeleton className="w-full h-30 bg-white " />
+      </div>
+    );
 
   return (
     <div className="flex flex-col gap-2 p-2 w-full">
@@ -29,7 +41,7 @@ const ScheduleList = () => {
           placeholder="Buscar cronogramas..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 border-none bg-white rounded-lg shadow"
+          className="pl-10 border-none h-10 bg-white rounded-lg shadow"
         />
       </div>
       <div className="w-full grid grid-cols-4 gap-2">

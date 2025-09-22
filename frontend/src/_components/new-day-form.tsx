@@ -32,21 +32,21 @@ const NewDayForm = ({
           Defina o horário de estudo para o dia selecionado.
         </DialogDescription>
 
-        <Form {...dayForm}>
-          <form
-            className="flex flex-col gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              submitDay(dayForm.getValues());
-            }}
-          >
-            <div className="flex gap-2">
+        <div className="">
+          <Form {...dayForm}>
+            <form
+              className="flex flex-col gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                submitDay(dayForm.getValues());
+              }}
+            >
               <FormField
                 control={dayForm.control}
                 name="startTime"
                 render={({ field }) => (
                   <FormItem className="flex flex-col flex-grow w-full sm:w-auto">
-                    <FormLabel className="text-sm font-normal">
+                    <FormLabel htmlFor="startTime" className="text-sm font-normal">
                       Início:
                     </FormLabel>
                     <FormControl>
@@ -54,7 +54,7 @@ const NewDayForm = ({
                         {...field}
                         onValueChange={(value) => field.onChange(value)}
                       >
-                        <SelectTrigger className="w-full shadow-none border border-border/20 text-foregrounds  min-h-12">
+                        <SelectTrigger className="w-full shadow-none border border-border text-foregrounds min-h-12">
                           <span className="text-foreground">
                             {field.value || "Selecione o horário"}
                           </span>
@@ -86,7 +86,7 @@ const NewDayForm = ({
                         {...field}
                         onValueChange={(value) => field.onChange(value)}
                       >
-                        <SelectTrigger className="w-full shadow-none border border-border/20 text-foregrounds  min-h-12">
+                        <SelectTrigger className="w-full shadow-none border border-border text-foregrounds  min-h-12">
                           <span className="text-foreground">
                             {field.value || "Selecione o horário"}
                           </span>
@@ -107,10 +107,12 @@ const NewDayForm = ({
                   </FormItem>
                 )}
               />
-            </div>
-            <Button type="submit">Adicionar</Button>
-          </form>
-        </Form>
+              <Button type="submit" className="w-full">
+                Adicionar
+              </Button>
+            </form>
+          </Form>
+        </div>
       </DialogHeader>
     </div>
   );

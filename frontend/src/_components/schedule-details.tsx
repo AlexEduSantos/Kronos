@@ -24,7 +24,15 @@ const ScheduleDetails = () => {
 
   if (isLoadingSchedule)
     return (
-      <div className="p-2">
+      <div className="p-2 flex flex-col gap-2">
+        <Skeleton className="w-full h-24 bg-white" />
+        <Skeleton className="w-full h-14 bg-white" />
+        <div className="w-full flex gap-2">
+          {Array.from({ length: 5 }, (_, i) => i).map((i) => (
+            <Skeleton key={i} className="w-full h-[80px] bg-white" />
+          ))}
+        </div>
+        <Skeleton className="w-full h-52 bg-white" />
         <Skeleton className="w-full h-10 bg-white" />
       </div>
     );
@@ -47,7 +55,7 @@ const ScheduleDetails = () => {
         </CardHeader>
       </Card>
       {/* Seção de Progresso */}
-      <Card className="flex flex-col gap-3 p-4 shadow-md bg-card border-none py-2">
+      <Card className="flex flex-col gap-2 p-4 shadow-md bg-card border-none py-2">
         <div className="flex justify-between items-center">
           <p className="text-sm  font-bold">Progresso Geral</p>
           <p className="text-lg font-bold ">{progress}%</p>
