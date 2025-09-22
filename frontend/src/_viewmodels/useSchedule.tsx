@@ -34,7 +34,7 @@ import {
   startOfYear,
 } from "date-fns";
 import { usePathname } from "next/navigation";
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -44,6 +44,8 @@ export const useSchedule = () => {
     ScheduleCardProps[]
   >([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [totalTopics, setTotalTopics] = useState(0);
+  const [checkedTopics, setCheckedTopics] = useState(0);
 
   const {
     data: schedules,
@@ -55,6 +57,63 @@ export const useSchedule = () => {
     queryFn: () => getAllSchedules(),
   });
 
+  const onFocus = schedules?.find(
+    (schedule: ScheduleCardProps) => schedule.status === "Active"
+  );
+
+  useEffect(() => {
+    // Se não houver um cronograma ativo, não faça nada.
+    if (!onFocus) {
+      setTotalTopics(0);
+      setCheckedTopics(0);
+      return;
+    }
+
+    // 1. Obter todos os tópicos de todos os dias do cronograma ativo.
+    // Usamos flatMap para criar um array único de tópicos.
+    const allTopics = onFocus.days
+      .flatMap((day: any) => day.topics || []) // Garante que dias sem tópicos não quebrem o código
+      .filter(Boolean); // Remove qualquer valor nulo ou undefined
+
+    // 2. Calcular o total de tópicos.
+    const calculatedTotalTopics = allTopics.length;
+
+    // 3. Contar os tópicos completados.
+    const calculatedCheckedTopics = allTopics.filter(
+      (topic: any) => topic.status === true
+    ).length;
+
+    // 4. Atualizar os estados.
+    setTotalTopics(calculatedTotalTopics);
+    setCheckedTopics(calculatedCheckedTopics);
+  }, [onFocus]); // O useEffect re-executa sempre que o cronograma ativo muda
+
+  // Quantidade de dias até a prova
+  const daysUntilExam = useMemo(() => {
+    if (onFocus) {
+      const today = new Date();
+      const examDate = new Date(onFocus.testDay);
+      const daysUntilExam = Math.ceil(
+        (examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      return daysUntilExam;
+    }
+    return null;
+  }, [onFocus]);
+
+  const [selectedDay, setSelectedDay] = useState<Date>(new Date());
+
+  const currentDayDisciplines = useMemo(() => {
+    if (onFocus) {
+      const day = onFocus.days.find((day: any) => {
+        const dayDate = new Date(day.date);
+        return isSameDay(dayDate, selectedDay);
+      });
+      return day?.topics || 0;
+    }
+  }, [onFocus, selectedDay]);
+
+  // Pesquisa
   useEffect(() => {
     if (schedules) {
       const filtered = schedules.filter((schedule: ScheduleCardProps) => {
@@ -108,6 +167,13 @@ export const useSchedule = () => {
 
   return {
     schedules,
+    onFocus,
+    totalTopics,
+    checkedTopics,
+    daysUntilExam,
+    selectedDay,
+    setSelectedDay,
+    currentDayDisciplines,
     isScheduleLoading,
     isScheduleError,
     scheduleError,

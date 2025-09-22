@@ -1,6 +1,6 @@
 "use client";
 import { useUser } from "@/_viewmodels/useUser";
-import { Bell } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import { useAuth } from "@/_viewmodels/useAuth";
 import { Skeleton } from "@/_components/ui/skeleton";
 import {
@@ -9,55 +9,54 @@ import {
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu";
 import { Button } from "@/_components/ui/button";
+import { useSchedule } from "@/_viewmodels/useSchedule";
+import { ScheduleCardProps } from "@/_components/schedule-card";
+import Link from "next/link";
 
 const Header = () => {
   const { user, isLoading } = useUser();
+  const { onFocus: schedule, isScheduleLoading } = useSchedule();
   const { onLogout: logout } = useAuth();
 
-  if (isLoading)
+  if (isLoading || isScheduleLoading)
     return (
       <>
-        <div className="w-full h-20 bg-white p-2 flex justify-between items-center">
-          <Skeleton className="w-12 h-12 rounded-full bg-current/20" />
-          <Skeleton className="w-12 h-12 rounded-full bg-current/20" />
-        </div>
+        <Skeleton className="w-full min-h-[115px] bg-white p-4 flex justify-between items-center rounded-none" />
       </>
     );
 
   return (
-    <div className="w-full h-20 bg-white p-2 flex justify-between items-center">
-      <div className="flex gap-2 items-center">
-        <div className="rounded-full h-12 w-12 relative overflow-hidden shadow">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <img
-                src={user?.avatar}
-                alt="avatar"
-                className="w-full h-full object-cover"
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              sideOffset={5}
-              align="start"
-              className="border-none bg-white p-2"
-            >
-              <Button
-                onClick={() => logout()}
-                variant="secondary"
-                className="w-full"
-              >
-                Sair
-              </Button>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <div className="flex flex-col">
-          <h2 className="font-bold text-lg">Olá, {user?.name}</h2>
-          <p className="text-sm">{user?.email}</p>
-        </div>
+    <div className="w-full min-h-20 bg-card p-4 flex justify-between items-center shadow-md">
+      <div className="flex flex-col">
+        <h2 className="font-bold text-3xl">Olá, {user?.name}! </h2>
+        <p className="nowrap line-clamp-2 text-primary">
+          Cronograma ativo:
+          <br />
+          <Link href={`/schedules/${schedule?.id}`}>
+            <strong> {schedule?.name}</strong>
+          </Link>
+        </p>
       </div>
-      <div className="mr-4 h-12 w-12 rounded-full flex items-center justify-center shadow">
-        <Bell className="stroke-1" />
+      <div className="rounded-full max-w-16 aspect-square  relative overflow-hidden shadow">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <img
+              src={user?.avatar}
+              alt="avatar"
+              className="w-full h-full object-cover"
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            sideOffset={5}
+            align="end"
+            className="border-none p-2"
+          >
+            <Button onClick={() => logout()} className="w-full">
+              <LogOutIcon className="h-4 w-4" />
+              Sair
+            </Button>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

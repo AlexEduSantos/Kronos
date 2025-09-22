@@ -1,74 +1,58 @@
 "use client";
 
-import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
-import { Skeleton } from "./ui/skeleton";
-import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { format } from "date-fns";
-import { Progress } from "./ui/progress";
-import CalendarHorizontal from "./horizontal-calendar";
+import AddTopicButton from "@/_components/add-topic-button";
+import CalendarHorizontal from "@/_components/horizontal-calendar";
+import { Button } from "@/_components/ui/button";
+import { Card } from "@/_components/ui/card";
+import { Checkbox } from "@/_components/ui/checkbox";
+import { Label } from "@/_components/ui/label";
+import { Skeleton } from "@/_components/ui/skeleton";
 import { cn } from "@/_lib/utils";
-import { Checkbox } from "./ui/checkbox";
-import { Label } from "./ui/label";
-import { Button } from "./ui/button";
+import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
+import { se } from "date-fns/locale";
 import { PenBoxIcon, Trash2Icon } from "lucide-react";
-import AddTopicButton from "./add-topic-button";
-import { Badge } from "./ui/badge";
 
-const ScheduleDetails = () => {
-  const { selectedDay, currentDayDisciplines, setSelectedDay } = useSchedule();
+const HomeSchedule = () => {
+  const {
+    onFocus: schedule,
+    isScheduleLoading,
+    selectedDay,
+    currentDayDisciplines,
+    setSelectedDay,
+  } = useSchedule();
 
-  const { schedule, isLoadingSchedule, progress, toggleDiscipline } =
-    useDetailsSchedule({ selectedDay, setSelectedDay });
+  const { toggleDiscipline } = useDetailsSchedule({
+    selectedDay,
+    setSelectedDay,
+  });
 
-  const { getStatusText, getStatusColor } = useSchedule();
-
-  if (isLoadingSchedule)
+  if (isScheduleLoading)
     return (
-      <div className="p-2">
+      <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex gap-2">
+          {Array.from({ length: 6 }, (_, i) => i).map((i) => (
+            <Skeleton key={i} className="w-full h-[80px] bg-white" />
+          ))}
+        </div>
+        <Skeleton className="w-full h-52 bg-white" />
         <Skeleton className="w-full h-10 bg-white" />
       </div>
     );
 
   return (
-    <div className="flex flex-col gap-2 w-full p-2 sm:p-0">
-      <Card className="p-0">
-        <CardHeader className="p-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="p-0 text-2xl font-bold">
-              {schedule?.name}
-            </CardTitle>
-            <Badge variant={getStatusColor(schedule!.status)}>
-              {getStatusText(schedule!.status)}
-            </Badge>
-          </div>
-          <CardDescription className="text-md ">
-            Dia da prova: {format(schedule?.testDay as string, "dd/MM/yyyy")}
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      {/* Seção de Progresso */}
-      <Card className="flex flex-col gap-3 p-4 shadow-md bg-card border-none py-2">
-        <div className="flex justify-between items-center">
-          <p className="text-sm  font-bold">Progresso Geral</p>
-          <p className="text-lg font-bold ">{progress}%</p>
-        </div>
-        <Progress value={progress} className="h-2" />
-        {/* Altura menor para barra */}
-      </Card>
-      {/* Calendário Horizontal */}
+    <>
       <CalendarHorizontal
         selectedDay={selectedDay}
         setSelectedDay={setSelectedDay}
       />
-      {/* Lista de Disciplinas do Dia */}
       {currentDayDisciplines!.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-2">
           {/* Use um div simples para organizar os cards */}
           {currentDayDisciplines?.map((topic: any) => (
             <Card
               key={topic.id}
               className={cn(
-                "flex flex-col p-4 shadow-md transition-all duration-300",
+                "flex flex-col p-4 shadow-md transition-all duration-300 w-full",
                 topic.status
                   ? "bg-card/70 border-l-4 border-primary"
                   : "bg-card border-l-4 border-primary-foreground/50"
@@ -114,14 +98,14 @@ const ScheduleDetails = () => {
                 <div className="flex gap-1 items-center">
                   <Button
                     variant="ghost"
-                    className="h-12 w-12 p-1 text-success hover:opacity-100"
+                    className="h-12 w-12 p-1 text-success hover:opacity-100" // Botões menores e mais discretos
                   >
                     <PenBoxIcon className="stroke-1" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 p-1 text-destructive  hover:opacity-100"
+                    className="h-8 w-8 p-1 text-destructive  hover:opacity-100" // Botões menores e mais discretos
                   >
                     <Trash2Icon className="stroke-1" />
                   </Button>
@@ -150,8 +134,8 @@ const ScheduleDetails = () => {
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 
-export default ScheduleDetails;
+export default HomeSchedule;

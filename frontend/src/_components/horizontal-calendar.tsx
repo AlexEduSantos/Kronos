@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { ptBR, se } from "date-fns/locale";
 import { Card } from "@/_components/ui/card";
 import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
+import { Skeleton } from "./ui/skeleton";
 
 const CalendarHorizontal = ({
   selectedDay,
