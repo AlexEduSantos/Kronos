@@ -64,7 +64,7 @@ const PomodoroTimer = () => {
 
   return (
     <Card
-      className={`w-full flex flex-row justify-between items-center p-4 gap-4`}
+      className={`w-full flex flex-row justify-between items-center p-2 gap-2 overflow-auto`}
     >
       <div className="flex items-center gap-2">
         <Switch
