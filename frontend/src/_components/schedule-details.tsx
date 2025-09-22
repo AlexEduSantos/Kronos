@@ -13,6 +13,7 @@ import { Button } from "./ui/button";
 import { PenBoxIcon, Trash2Icon } from "lucide-react";
 import AddTopicButton from "./add-topic-button";
 import { Badge } from "./ui/badge";
+import { deleteTopic } from "@/_services/schedule-service";
 
 const ScheduleDetails = () => {
   const { selectedDay, currentDayDisciplines, setSelectedDay } = useSchedule();
@@ -129,6 +130,8 @@ const ScheduleDetails = () => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    type="button"
+                    onClick={() => deleteTopic(topic.id)}
                     className="h-8 w-8 p-1 text-destructive  hover:opacity-100"
                   >
                     <Trash2Icon className="stroke-1" />

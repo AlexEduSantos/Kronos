@@ -14,9 +14,15 @@ import {
 import {
   createDay,
   createTopic,
+  deleteDay,
+  deleteSchedule,
+  deleteTopic,
   getAllSchedules,
   getScheduleById,
   toggleStatusTopic,
+  updateDay,
+  updateSchedule,
+  updateTopic,
 } from "@/_services/schedule-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -165,6 +171,58 @@ export const useSchedule = () => {
     }
   };
 
+  // -------------------
+  // MUTATIONS
+  // -------------------
+
+  const queryClient = useQueryClient();
+
+  const updateScheuduleMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      updateSchedule(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    },
+  });
+
+  const deleteScheduleMutation = useMutation({
+    mutationFn: (id: string) => deleteSchedule(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({ queryKey: ["schedule"] });
+    },
+  });
+
+  const updateDayMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      updateDay(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    },
+  });
+
+  const deleteDayMutation = useMutation({
+    mutationFn: (id: string) => deleteDay(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    },
+  });
+
+  const updateTopicMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      updateTopic(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    },
+  });
+
+  const deleteTopicMutation = useMutation({
+    mutationFn: (id: string) => deleteTopic(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    },
+  });
+
   return {
     schedules,
     onFocus,
@@ -184,6 +242,12 @@ export const useSchedule = () => {
     setStatusFilter,
     getStatusText,
     getStatusColor,
+    updateScheuduleMutation,
+    deleteScheduleMutation,
+    updateDayMutation,
+    deleteDayMutation,
+    updateTopicMutation,
+    deleteTopicMutation,
   };
 };
 
