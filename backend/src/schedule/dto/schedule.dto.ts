@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsDateString,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -69,6 +70,14 @@ export class CreateScheduleDto {
   days: CreateDayDto[];
 }
 
+enum ScheduleStatus {
+  FOCUS = 'Focus',
+  ACTIVE = 'Active',
+  FINISHED = '  Finished',
+  CANCELLED = 'Cancelled',
+  PAUSED = 'Paused',
+}
+
 export class UpdateScheduleDto {
   @IsString()
   @IsNotEmpty()
@@ -82,4 +91,11 @@ export class UpdateScheduleDto {
 
   @IsDateString()
   studyEndDate: string;
+
+  @IsInt()
+  @Min(0)
+  progress: number;
+
+  @IsEnum(ScheduleStatus)
+  status: string;
 }
