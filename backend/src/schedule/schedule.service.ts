@@ -186,6 +186,36 @@ export class ScheduleService {
     await this.prisma.day.delete({
       where: { id: dayId },
     });
+
+    const schedule = await this.prisma.schedule.findUnique({
+      where: { id: existingDay.scheduleId },
+      include: {
+        days: {
+          include: {
+            topics: true,
+          },
+        },
+      },
+    });
+
+    if (!schedule) throw new NotFoundException('Cronograma nao encontrado.');
+
+    const totalTopics = schedule?.days.flatMap((day) => day.topics).length;
+    const completedTopics = schedule?.days
+      .flatMap((day) => day.topics)
+      .filter((topic) => topic.status).length;
+    if (completedTopics && totalTopics) {
+      const newProgress = () => {
+        if (totalTopics === 0) {
+          return 0;
+        }
+        return Math.round((completedTopics / totalTopics) * 100);
+      };
+      await this.prisma.schedule.update({
+        where: { id: existingDay.scheduleId },
+        data: { progress: newProgress.toString() },
+      });
+    }
   }
 
   // ======================
@@ -249,6 +279,41 @@ export class ScheduleService {
     await this.prisma.topic.delete({
       where: { id: topicId },
     });
+
+    const day = await this.prisma.day.findUnique({
+      where: { id: existingTopic.dayId },
+    });
+    if (!day) throw new NotFoundException('Dia nao encontrado.');
+
+    const schedule = await this.prisma.schedule.findUnique({
+      where: { id: day.scheduleId },
+      include: {
+        days: {
+          include: {
+            topics: true,
+          },
+        },
+      },
+    });
+
+    if (!schedule) throw new NotFoundException('Cronograma nao encontrado.');
+
+    const totalTopics = schedule?.days.flatMap((day) => day.topics).length;
+    const completedTopics = schedule?.days
+      .flatMap((day) => day.topics)
+      .filter((topic) => topic.status).length;
+    if (completedTopics && totalTopics) {
+      const newProgress = () => {
+        if (totalTopics === 0) {
+          return 0;
+        }
+        return Math.round((completedTopics / totalTopics) * 100);
+      };
+      await this.prisma.schedule.update({
+        where: { id: day.scheduleId },
+        data: { progress: newProgress.toString() },
+      });
+    }
   }
 
   async toggleTopicStatus(topicId: string, scheduleId: string) {
@@ -278,8 +343,12 @@ export class ScheduleService {
       .flatMap((day) => day.topics)
       .filter((topic) => topic.status).length;
     if (completedTopics && totalTopics) {
-      const newProgress = Math.round((completedTopics / totalTopics) * 100);
-      // 4. Atualiza a coluna de progresso no banco de dados
+      const newProgress = () => {
+        if (totalTopics === 0) {
+          return 0;
+        }
+        return Math.round((completedTopics / totalTopics) * 100);
+      };
       await this.prisma.schedule.update({
         where: { id: scheduleId },
         data: { progress: newProgress.toString() },

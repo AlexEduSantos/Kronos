@@ -165,8 +165,10 @@ export class ScheduleController {
     @Param('topicId', new ParseUUIDPipe()) topicId: string,
     @Param('scheduleId', new ParseUUIDPipe()) scheduleId: string,
   ) {
-    const statusUpdateTopic =
-      await this.scheduleService.toggleTopicStatus(topicId, scheduleId);
+    const statusUpdateTopic = await this.scheduleService.toggleTopicStatus(
+      topicId,
+      scheduleId,
+    );
 
     return {
       message: 'Tópico atualizado com sucesso.',
