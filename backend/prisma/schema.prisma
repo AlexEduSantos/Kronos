@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["backend_schema"]
 }
 
 enum SchemaStatus {
@@ -13,6 +14,8 @@ enum SchemaStatus {
   Finished
   Cancelled
   Paused
+
+  @@schema("backend_schema")
 }
 
 model Schedule {
@@ -28,6 +31,8 @@ model Schedule {
   updatedAt      DateTime     @updatedAt
   User           User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String?
+
+  @@schema("backend_schema")
 }
 
 model Day {
@@ -42,6 +47,7 @@ model Day {
   // evita dias duplicados por schedule
   @@unique([scheduleId, date])
   @@index([scheduleId])
+  @@schema("backend_schema")
 }
 
 model Topic {
@@ -54,6 +60,7 @@ model Topic {
   status   Boolean @default(false)
 
   @@index([dayId])
+  @@schema("backend_schema")
 }
 
 model User {
@@ -65,6 +72,8 @@ model User {
   avatar    String     @default("https://www.gravatar.com/avatar/?d=retro&s=200")
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
+  @@schema("backend_schema")
 }
 
 model Session {
@@ -74,4 +83,5 @@ model Session {
 
   @@index([expire], name: "IDX_session_expire")
   @@map("session")
+  @@schema("backend_schema")
 }
