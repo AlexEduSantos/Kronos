@@ -13,6 +13,7 @@ import {
 } from "@/_schemas/scheduleSchema";
 import {
   createDay,
+  createSchedule,
   createTopic,
   deleteDay,
   deleteSchedule,
@@ -39,7 +40,7 @@ import {
   startOfMonth,
   startOfYear,
 } from "date-fns";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -552,6 +553,7 @@ export const useNewScheduleViewModel = () => {
     resolver: zodResolver(newScheduleFormSchema),
     defaultValues: {
       name: "",
+      position: "",
       testDay: (() => {
         const date = new Date();
         date.setDate(date.getDate() + 1); // Default para amanhã
@@ -607,11 +609,83 @@ export const useNewScheduleViewModel = () => {
     (testDay && !isBefore(date, testDay)) || // Não pode ser após a data da prova
     (isPast(date) && !isSameDay(date, new Date())); // E também não pode ser no passado (exceto hoje)
 
+  const router = useRouter();
+
+  type Topic = {
+    name: string;
+    dayId: string;
+    weight: number;
+    duration: number;
+  };
+  type Days = {
+    date: Date;
+    scheduleId: string;
+    topics: Topic[];
+    endTime: string;
+    startTime: string;
+  };
+
+  const [loading, setLoading] = useState(false);
   // Função onSubmit
   const onSubmit = async (data: NewScheduleFormData) => {
-    console.log("Dados do Formulário:", data);
+    const WEBHOOK_URL =
+      "http://localhost:5677/webhook/aff2962c-c933-4487-8e47-b1ca7ea6ba6c";
+    try {
+      const formData = new FormData();
 
-    alert("Cronograma gerado! Veja o console para os dados.");
+      formData.append("name", data.name);
+      formData.append("position", data.position);
+      formData.append("testDay", data.testDay.toISOString());
+      formData.append("studyRangeFrom", data.studyRange.from.toISOString());
+      formData.append("studyRangeTo", data.studyRange.to.toISOString());
+      formData.append(
+        "selectedWeekdays",
+        JSON.stringify(data.selectedWeekdays)
+      );
+      formData.append("studyStartTime", data.studyStartTime);
+      formData.append("studyEndTime", data.studyEndTime);
+      formData.append("document", data.document);
+
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+      }
+
+      // setLoading(true);
+
+      const result = await response.json();
+
+      if (!result) {
+        toast.error("Erro ao criar agendamento.");
+        throw new Error("Erro ao criar agendamento.");
+      } else {
+      }
+
+      // try {
+      //   const newSchedule = await createSchedule(result[0]);
+
+      //   if (!newSchedule) {
+      //     toast.error("Erro ao criar agendamento.");
+      //     throw new Error("Erro ao criar agendamento.");
+      //   }
+
+      //   toast.success("Agendamento criado com sucesso!");
+
+      //   const id = newSchedule.id;
+      //   form.reset();
+      //   setLoading(false);
+      //   router.push(`/schedules/${id}`);
+      // } catch (error) {}
+    } catch (error) {
+      console.error("Erro ao enviar dados para o n8n:", error);
+      toast.error("Erro ao enviar dados para o n8n.");
+    }
   };
 
   return {
@@ -629,5 +703,6 @@ export const useNewScheduleViewModel = () => {
     step,
     setStep,
     handleNextStep,
+    loading,
   };
 };

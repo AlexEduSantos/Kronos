@@ -4,6 +4,7 @@ import { date, z } from "zod";
 export const newScheduleFormSchema = z
   .object({
     name: z.string().min(1, "Nome do cronograma é obrigatório."),
+    position: z.string().min(1, "Cargo pretendido é obrigatório."),
     testDay: z
       .date({
         error: "A data da prova é obrigatória.",

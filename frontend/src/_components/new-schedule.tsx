@@ -14,7 +14,12 @@ import {
 import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/_lib/utils";
-import { ChevronDownIcon, FileTextIcon, UploadIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  FileTextIcon,
+  LoaderCircle,
+  UploadIcon,
+} from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { Label } from "./ui/label";
 import { ptBR } from "date-fns/locale";
@@ -29,8 +34,7 @@ const NewSchedule = () => {
     selectedWeekdays,
     handleWeekdayToggle,
     hoursPerDay,
-    isDisabledStudyStartDate,
-    isDisabledStudyEndDate,
+    loading,
   } = useNewScheduleViewModel();
   const router = useRouter();
 
@@ -60,6 +64,23 @@ const NewSchedule = () => {
                   <FormControl>
                     <Input
                       placeholder="Digite o nome do cronograma"
+                      className="border border-background min-h-12"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="position"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cargo Pretendido</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Digite o nome do cargo pretendido"
                       className="border border-background min-h-12"
                       {...field}
                     />
@@ -233,7 +254,7 @@ const NewSchedule = () => {
                 name="studyRange"
                 render={({ field }) => (
                   <FormItem className="flex flex-col flex-grow w-full  sm:w-auto">
-                    <FormLabel className="">Início:</FormLabel>
+                    <FormLabel className="">Período de Estudo</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -270,6 +291,8 @@ const NewSchedule = () => {
                             onSelect={field.onChange}
                             disabled={(date) => date < new Date()}
                             locale={ptBR}
+                            startMonth={new Date()}
+                            endMonth={form.getValues("testDay")}
                             autoFocus
                             fixedWeeks={true}
                             captionLayout="dropdown"
@@ -377,6 +400,14 @@ const NewSchedule = () => {
           Criar Cronograma
         </Button>
       </form>
+      <div
+        className={`w-screen h-screen fixed top-0 left-0 z-50 flex flex-col gap-4 items-center justify-center ${
+          loading ? "block" : "hidden"
+        } text-muted bg-primary/50 backdrop-blur-sm`}
+      >
+        <LoaderCircle />
+        <p>Criando Cronograma</p>
+      </div>
     </Form>
   );
 };
