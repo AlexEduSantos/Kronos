@@ -301,26 +301,9 @@ export class ScheduleService {
     });
 
     if (!schedule) throw new NotFoundException('Cronograma nao encontrado.');
-
-    const totalTopics = schedule?.days.flatMap((day) => day.topics).length;
-    const completedTopics = schedule?.days
-      .flatMap((day) => day.topics)
-      .filter((topic) => topic.status).length;
-    if (completedTopics && totalTopics) {
-      const newProgress = () => {
-        if (totalTopics === 0) {
-          return 0;
-        }
-        return Math.round((completedTopics / totalTopics) * 100);
-      };
-      await this.prisma.schedule.update({
-        where: { id: day.scheduleId },
-        data: { progress: newProgress.toString() },
-      });
-    }
   }
 
-  async toggleTopicStatus(topicId: string, scheduleId: string) {
+  async toggleTopicStatus(topicId: string) {
     const topic = await this.prisma.topic.findUnique({
       where: { id: topicId },
     });
@@ -331,32 +314,5 @@ export class ScheduleService {
       where: { id: topicId },
       data: { status: !topic.status },
     });
-
-    const schedule = await this.prisma.schedule.findUnique({
-      where: { id: scheduleId },
-      include: {
-        days: {
-          include: {
-            topics: true,
-          },
-        },
-      },
-    });
-    const totalTopics = schedule?.days.flatMap((day) => day.topics).length;
-    const completedTopics = schedule?.days
-      .flatMap((day) => day.topics)
-      .filter((topic) => topic.status).length;
-    if (completedTopics && totalTopics) {
-      const newProgress = () => {
-        if (totalTopics === 0) {
-          return 0;
-        }
-        return Math.round((completedTopics / totalTopics) * 100);
-      };
-      await this.prisma.schedule.update({
-        where: { id: scheduleId },
-        data: { progress: newProgress.toString() },
-      });
-    }
   }
 }
