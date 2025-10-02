@@ -38,17 +38,21 @@ export class ScheduleService {
   async createSchedule(data: CreateScheduleDto, userId: string) {
     try {
       const { days, ...scheduleData } = data;
-      console.log(userId);
+
+      const scheduleToCreate = {
+        ...scheduleData,
+        // Conversão de datas: é crucial fazer isso para o Prisma
+        testDay: new Date(scheduleData.testDay as string),
+        studyStartDate: new Date(scheduleData.studyStartDate as string),
+        studyEndDate: new Date(scheduleData.studyEndDate as string),
+      };
 
       return await this.prisma.schedule.create({
         data: {
-          ...scheduleData,
-          testDay: new Date(scheduleData.testDay),
-          studyStartDate: new Date(scheduleData.studyStartDate),
-          studyEndDate: new Date(scheduleData.studyEndDate),
+          ...scheduleToCreate,
           days: {
             create: days.map((day) => ({
-              date: new Date(day.date),
+              date: new Date(day.date as string),
               startTime: day.startTime,
               endTime: day.endTime,
               topics: {

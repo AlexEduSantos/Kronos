@@ -10,7 +10,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:3000', // Permite requisições do seu frontend
+    origin: [
+      'http://localhost:3000', // Seu Frontend
+      'http://localhost:5678', // Seu n8n Editor
+      'http://localhost:5677', // Seu n8n Webhook
+      'http://backend:3001', // Comunicação interna
+      /http:\/\/localhost:\d{4}/, // Permite qualquer porta localhost (para dev)
+    ], // Permite requisições do seu frontend
     credentials: true,
   });
 
