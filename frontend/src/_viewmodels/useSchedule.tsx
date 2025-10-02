@@ -114,7 +114,10 @@ export const useSchedule = () => {
     if (onFocus) {
       const day = onFocus.days.find((day: any) => {
         const dayDate = new Date(day.date);
-        return isSameDay(dayDate, selectedDay);
+        return (
+          dayDate.toISOString().substring(0, 10) ===
+          selectedDay.toISOString().substring(0, 10)
+        );
       });
       return day?.topics || 0;
     }
