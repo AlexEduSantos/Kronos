@@ -1,4 +1,4 @@
 /db_data
 /n8n-data
-.env
+.env*
 /.vscode
