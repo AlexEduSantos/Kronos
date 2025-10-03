@@ -160,10 +160,9 @@ export class ScheduleController {
     };
   }
 
-  @Put(':scheduleId/topics/:topicId/status')
+  @Put('topics/:topicId/status')
   async toggleTopicStatus(
     @Param('topicId', new ParseUUIDPipe()) topicId: string,
-    @Param('scheduleId', new ParseUUIDPipe()) scheduleId: string,
   ) {
     const statusUpdateTopic =
       await this.scheduleService.toggleTopicStatus(topicId);
