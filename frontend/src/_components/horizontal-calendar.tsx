@@ -1,9 +1,8 @@
 "use client";
 import { format } from "date-fns";
-import { ptBR, se } from "date-fns/locale";
+import { ptBR } from "date-fns/locale";
 import { Card } from "@/_components/ui/card";
-import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
-import { Skeleton } from "./ui/skeleton";
+import { useSchedule } from "@/_viewmodels/useSchedule";
 
 const CalendarHorizontal = ({
   selectedDay,
@@ -13,7 +12,7 @@ const CalendarHorizontal = ({
   setSelectedDay: (date: Date) => void;
 }) => {
   const { today, scrollContainerRef, todayCardRef, daysInAYear } =
-    useDetailsSchedule({ selectedDay, setSelectedDay });
+    useSchedule();
 
   return (
     <div className="w-full flex gap-2 relative">

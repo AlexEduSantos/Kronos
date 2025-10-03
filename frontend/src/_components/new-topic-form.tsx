@@ -8,19 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { useDetailsSchedule } from "@/_viewmodels/useSchedule";
+import { useSchedule } from "@/_viewmodels/useSchedule";
 
-const NewTopicForm = ({
-  selectedDay,
-  setSelectedDay,
-}: {
-  selectedDay: Date;
-  setSelectedDay: (date: Date) => void;
-}) => {
-  const { topicForm, submitTopic } = useDetailsSchedule({
-    selectedDay,
-    setSelectedDay,
-  });
+const NewTopicForm = () => {
+  const { topicForm, submitTopic } = useSchedule();
+
   return (
     <div>
       <DialogHeader>

@@ -10,19 +10,10 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { Button } from "./ui/button";
 import { DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
-import { useDetailsSchedule } from "@/_viewmodels/useSchedule";
+import { useSchedule } from "@/_viewmodels/useSchedule";
 
-const NewDayForm = ({
-  selectedDay,
-  setSelectedDay,
-}: {
-  selectedDay: Date;
-  setSelectedDay: (date: Date) => void;
-}) => {
-  const { hoursPerDay, dayForm, submitDay } = useDetailsSchedule({
-    selectedDay,
-    setSelectedDay,
-  });
+const NewDayForm = () => {
+  const { hoursPerDay, dayForm, submitDay, dayId } = useSchedule();
 
   return (
     <div>
@@ -38,7 +29,7 @@ const NewDayForm = ({
               className="flex flex-col gap-2"
               onSubmit={(e) => {
                 e.preventDefault();
-                submitDay(dayForm.getValues());
+                submitDay(dayForm.getValues(), dayId!);
               }}
             >
               <FormField
@@ -46,7 +37,10 @@ const NewDayForm = ({
                 name="startTime"
                 render={({ field }) => (
                   <FormItem className="flex flex-col flex-grow w-full sm:w-auto">
-                    <FormLabel htmlFor="startTime" className="text-sm font-normal">
+                    <FormLabel
+                      htmlFor="startTime"
+                      className="text-sm font-normal"
+                    >
                       Início:
                     </FormLabel>
                     <FormControl>

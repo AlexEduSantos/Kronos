@@ -1,6 +1,6 @@
 "use client";
 
-import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
+import { useSchedule } from "@/_viewmodels/useSchedule";
 import { Skeleton } from "./ui/skeleton";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { format } from "date-fns";
@@ -16,10 +16,15 @@ import { Badge } from "./ui/badge";
 import { deleteTopic } from "@/_services/schedule-service";
 
 const ScheduleDetails = () => {
-  const { selectedDay, currentDayDisciplines, setSelectedDay } = useSchedule();
-
-  const { schedule, isLoadingSchedule, progress, toggleDiscipline } =
-    useDetailsSchedule({ selectedDay, setSelectedDay });
+  const {
+    selectedDay,
+    currentDayDisciplines,
+    setSelectedDay,
+    schedule,
+    isScheduleLoading: isLoadingSchedule,
+    progress,
+    toggleStatusTopic: toggleDiscipline,
+  } = useSchedule();
 
   const { getStatusText, getStatusColor } = useSchedule();
 
@@ -92,7 +97,6 @@ const ScheduleDetails = () => {
                     onCheckedChange={() =>
                       toggleDiscipline({
                         topicId: topic.id,
-                        scheduleId: schedule!.id,
                       })
                     }
                   />
@@ -140,10 +144,7 @@ const ScheduleDetails = () => {
               </div>
             </Card>
           ))}
-          <AddTopicButton
-            selectedDay={selectedDay}
-            setSelectedDay={setSelectedDay}
-          />
+          <AddTopicButton />
         </div>
       ) : (
         <div className="flex flex-col gap-2">
@@ -155,10 +156,7 @@ const ScheduleDetails = () => {
               Que tal um descanso merecido ou revisar algo por conta própria?
             </p>
           </Card>
-          <AddTopicButton
-            selectedDay={selectedDay}
-            setSelectedDay={setSelectedDay}
-          />
+          <AddTopicButton />
         </div>
       )}
     </div>

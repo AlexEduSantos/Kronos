@@ -1,5 +1,4 @@
 "use client";
-import { useNewScheduleViewModel } from "@/_viewmodels/useSchedule";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import {
@@ -25,6 +24,7 @@ import { Label } from "./ui/label";
 import { ptBR } from "date-fns/locale";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { useRouter } from "next/navigation";
+import { useSchedule } from "@/_viewmodels/useSchedule";
 
 const NewSchedule = () => {
   const {
@@ -34,8 +34,7 @@ const NewSchedule = () => {
     selectedWeekdays,
     handleWeekdayToggle,
     hoursPerDay,
-    loading,
-  } = useNewScheduleViewModel();
+  } = useSchedule();
   const router = useRouter();
 
   return (
@@ -352,9 +351,9 @@ const NewSchedule = () => {
                           </span>
                         </SelectTrigger>
                         <SelectContent>
-                          {hoursPerDay.map((hour) => (
-                            <SelectItem key={hour} value={hour}>
-                              {hour}
+                          {hoursPerDay.map((hour, index) => (
+                            <SelectItem key={index} value={hour.toDateString()}>
+                              {hour.toDateString()}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -381,9 +380,9 @@ const NewSchedule = () => {
                           </span>
                         </SelectTrigger>
                         <SelectContent>
-                          {hoursPerDay.map((hour) => (
-                            <SelectItem key={hour} value={hour}>
-                              {hour}
+                          {hoursPerDay.map((hour, index) => (
+                            <SelectItem key={index} value={hour.toDateString()}>
+                              {hour.toDateString()}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -400,14 +399,6 @@ const NewSchedule = () => {
           Criar Cronograma
         </Button>
       </form>
-      <div
-        className={`w-screen h-screen fixed top-0 left-0 z-50 flex flex-col gap-4 items-center justify-center ${
-          loading ? "block" : "hidden"
-        } text-muted bg-primary/50 backdrop-blur-sm`}
-      >
-        <LoaderCircle />
-        <p>Criando Cronograma</p>
-      </div>
     </Form>
   );
 };
