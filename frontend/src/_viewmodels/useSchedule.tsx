@@ -1,6 +1,10 @@
 "use client";
-
 import { ScheduleCardProps } from "@/_components/schedule-card";
+import {
+  useScheduleMutations,
+  useScheduleQuery,
+  useSchedulesQuery,
+} from "@/_queries/useScheduleQuery";
 import {
   DaysFormData,
   daysFormSchema,
@@ -11,22 +15,7 @@ import {
   TopicsFormData,
   topicsFormSchema,
 } from "@/_schemas/scheduleSchema";
-import {
-  createDay,
-  createSchedule,
-  createTopic,
-  deleteDay,
-  deleteSchedule,
-  deleteTopic,
-  getAllSchedules,
-  getScheduleById,
-  toggleStatusTopic,
-  updateDay,
-  updateSchedule,
-  updateTopic,
-} from "@/_services/schedule-service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   eachDayOfInterval,
   eachHourOfInterval,
@@ -40,10 +29,24 @@ import {
   startOfMonth,
   startOfYear,
 } from "date-fns";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+type Topic = {
+  name: string;
+  dayId: string;
+  weight: number;
+  duration: number;
+};
+type Days = {
+  date: Date;
+  scheduleId: string;
+  topics: Topic[];
+  endTime: string;
+  startTime: string;
+};
 
 export const useSchedule = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,47 +56,56 @@ export const useSchedule = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [totalTopics, setTotalTopics] = useState(0);
   const [checkedTopics, setCheckedTopics] = useState(0);
+  const [selectedDay, setSelectedDay] = useState<Date>(new Date());
+  const [step, setStep] = useState(1);
+  const [dayId, setDayId] = useState<string | undefined>(undefined);
 
-  const {
-    data: schedules,
-    isLoading: isScheduleLoading,
-    isError: isScheduleError,
-    error: scheduleError,
-  } = useQuery({
-    queryKey: ["schedules"],
-    queryFn: () => getAllSchedules(),
-  });
+  // -------------- //
+  //    QUERIES   //
+  // -------------- //
+  const { schedules } = useSchedulesQuery();
+  const { createTopicMutation, createDayMutation, toggleStatusTopicMutation } =
+    useScheduleMutations();
+
+  const { mutate: createTopic, isPending: isCreateTopicPending } =
+    createTopicMutation;
+  const { mutate: createDay, isPending: isCreateDayPending } =
+    createDayMutation;
+  const { mutate: toggleStatusTopic, isPending: isToggleStatusTopicPending } =
+    toggleStatusTopicMutation;
+
+  // -------------- //
+  //     FUNÇÕES    //
+  // -------------- //
+
+  const pathname = usePathname();
+  const id = pathname.split("/")[2];
+  const today = new Date();
+  const { schedule, isScheduleLoading } = useScheduleQuery(id);
 
   const onFocus = schedules?.find(
     (schedule: ScheduleCardProps) => schedule.status === "Active"
   );
 
+  // Calcular quantidade de tópicos e tópicos completados
   useEffect(() => {
-    // Se não houver um cronograma ativo, não faça nada.
     if (!onFocus) {
       setTotalTopics(0);
       setCheckedTopics(0);
       return;
     }
 
-    // 1. Obter todos os tópicos de todos os dias do cronograma ativo.
-    // Usamos flatMap para criar um array único de tópicos.
     const allTopics = onFocus.days
-      .flatMap((day: any) => day.topics || []) // Garante que dias sem tópicos não quebrem o código
-      .filter(Boolean); // Remove qualquer valor nulo ou undefined
+      .flatMap((day: any) => day.topics || [])
+      .filter(Boolean);
 
-    // 2. Calcular o total de tópicos.
-    const calculatedTotalTopics = allTopics.length;
-
-    // 3. Contar os tópicos completados.
     const calculatedCheckedTopics = allTopics.filter(
       (topic: any) => topic.status === true
     ).length;
 
-    // 4. Atualizar os estados.
-    setTotalTopics(calculatedTotalTopics);
+    setTotalTopics(allTopics.length);
     setCheckedTopics(calculatedCheckedTopics);
-  }, [onFocus]); // O useEffect re-executa sempre que o cronograma ativo muda
+  }, [onFocus]);
 
   // Quantidade de dias até a prova
   const daysUntilExam = useMemo(() => {
@@ -107,21 +119,6 @@ export const useSchedule = () => {
     }
     return null;
   }, [onFocus]);
-
-  const [selectedDay, setSelectedDay] = useState<Date>(new Date());
-
-  const currentDayDisciplines = useMemo(() => {
-    if (onFocus) {
-      const day = onFocus.days.find((day: any) => {
-        const dayDate = new Date(day.date);
-        return (
-          dayDate.toISOString().substring(0, 10) ===
-          selectedDay.toISOString().substring(0, 10)
-        );
-      });
-      return day?.topics || 0;
-    }
-  }, [onFocus, selectedDay]);
 
   // Pesquisa
   useEffect(() => {
@@ -175,173 +172,6 @@ export const useSchedule = () => {
     }
   };
 
-  // -------------------
-  // MUTATIONS
-  // -------------------
-
-  const queryClient = useQueryClient();
-
-  const updateScheuduleMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
-      updateSchedule(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-    },
-  });
-
-  const deleteScheduleMutation = useMutation({
-    mutationFn: (id: string) => deleteSchedule(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-      queryClient.invalidateQueries({ queryKey: ["schedule"] });
-    },
-  });
-
-  const updateDayMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
-      updateDay(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-    },
-  });
-
-  const deleteDayMutation = useMutation({
-    mutationFn: (id: string) => deleteDay(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-    },
-  });
-
-  const updateTopicMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
-      updateTopic(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-    },
-  });
-
-  const deleteTopicMutation = useMutation({
-    mutationFn: (id: string) => deleteTopic(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-    },
-  });
-
-  return {
-    schedules,
-    onFocus,
-    totalTopics,
-    checkedTopics,
-    daysUntilExam,
-    selectedDay,
-    setSelectedDay,
-    currentDayDisciplines,
-    isScheduleLoading,
-    isScheduleError,
-    scheduleError,
-    filteredSchedules,
-    searchTerm,
-    setSearchTerm,
-    statusFilter,
-    setStatusFilter,
-    getStatusText,
-    getStatusColor,
-    updateScheuduleMutation,
-    deleteScheduleMutation,
-    updateDayMutation,
-    deleteDayMutation,
-    updateTopicMutation,
-    deleteTopicMutation,
-  };
-};
-
-export const useDetailsSchedule = ({
-  selectedDay,
-  setSelectedDay,
-}: {
-  selectedDay: Date;
-  setSelectedDay: (date: Date) => void;
-}) => {
-  const pathname = usePathname();
-  const id = pathname.split("/")[2];
-  const today = new Date();
-
-  const [step, setStep] = useState(1);
-  const [dayId, setDayId] = useState<string | undefined>(undefined);
-
-  const {
-    data: schedule,
-    isLoading: isLoadingSchedule,
-    isError: isErrorSchedule,
-    error: errorSchedule,
-  } = useQuery<ScheduleCardProps>({
-    queryKey: ["schedule", id],
-    queryFn: () => getScheduleById(id),
-    enabled: !!id,
-  });
-
-  const queryClient = useQueryClient();
-
-  // ======================
-  // MUTAÇÕES DO REACT QUERY
-  // ======================
-  const { mutate: mutateStatusTopic } = useMutation({
-    mutationFn: ({
-      topicId,
-      scheduleId,
-    }: {
-      topicId: string;
-      scheduleId: string;
-    }) => toggleStatusTopic(topicId, scheduleId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-      queryClient.refetchQueries({ queryKey: ["schedule", id] });
-    },
-    onError: (error) => {
-      console.error("Erro ao alterar o status do tópico:", error);
-    },
-  });
-
-  const { mutate: createTopics } = useMutation({
-    mutationFn: (data: any) => {
-      const { dayId, ...topicData } = data;
-
-      console.log(topicData);
-
-      return createTopic(dayId, topicData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-      queryClient.refetchQueries({ queryKey: ["schedule", id] });
-    },
-    onError: (error) => {
-      console.error("Erro ao criar o tópico:", error);
-    },
-  });
-
-  const { mutate: createNewDay } = useMutation({
-    mutationFn: (data: any) => createDay(id, data),
-    onSuccess: (response) => {
-      setDayId(response.id);
-      setStep(2);
-      toast.success("Dia cadastrado com sucesso.");
-
-      // ✅ Invalidação correta das queries
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-      queryClient.refetchQueries({ queryKey: ["schedule", id] });
-    },
-    onError: (error) => {
-      toast.error("Erro ao criar o dia.");
-    },
-  });
-
-  // ======================
-  // Funções
-  // ======================
-
-  const scrollContainerRef = useRef<HTMLDivElement>(null); // Ref para o contêiner de rolagem
-  const todayCardRef = useRef<HTMLDivElement>(null); // Ref para o Card do dia atual
-
   const hoursPerDay = eachHourOfInterval({
     start: startOfDay(today),
     end: endOfDay(today),
@@ -356,6 +186,21 @@ export const useDetailsSchedule = ({
     start: startOfYear(today),
     end: endOfYear(today),
   });
+
+  const weeakDaysFull = [
+    "Domingo",
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
+  ];
+  const weeakDaysShort = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+  // Scroll para o dia atual
+  const scrollContainerRef = useRef<HTMLDivElement>(null); // Ref para o contêiner de rolagem
+  const todayCardRef = useRef<HTMLDivElement>(null); // Ref para o Card do dia atual
 
   useEffect(() => {
     if (scrollContainerRef.current && todayCardRef.current) {
@@ -374,6 +219,7 @@ export const useDetailsSchedule = ({
     }
   }, []);
 
+  // Progresso
   const disciplinesTotal = useMemo(() => {
     return schedule?.days
       .map((day) => day.topics.length)
@@ -418,119 +264,6 @@ export const useDetailsSchedule = ({
     }
   }, [currentDayId]);
 
-  // ======================
-  // FORMS
-  // ======================
-
-  const scheduleForm = useForm<ScheduleFormData>({
-    resolver: zodResolver(scheduleFormSchema),
-    defaultValues: {
-      name: "",
-      testDay: new Date(),
-      studyStartDate: new Date(),
-      studyEndDate: new Date(),
-      days: [],
-    },
-  });
-
-  const dayForm = useForm<DaysFormData>({
-    resolver: zodResolver(daysFormSchema),
-    defaultValues: {
-      date: selectedDay,
-      startTime: "",
-      endTime: "",
-      topics: [],
-    },
-  });
-
-  const submitDay = async (data: DaysFormData) => {
-    if (currentDayId !== undefined) {
-      toast.error("Dia já cadastrado.");
-      setStep(2);
-      return;
-    }
-    createNewDay(data);
-    dayForm.reset();
-  };
-
-  const topicForm = useForm<TopicsFormData>({
-    resolver: zodResolver(topicsFormSchema),
-    defaultValues: {
-      name: "",
-      weight: 0,
-      duration: 0,
-      status: false,
-    },
-  });
-
-  const submitTopic = (topicData: TopicsFormData) => {
-    if (dayId !== undefined) {
-      const dataToSend = {
-        name: topicData.name,
-        weight: Number(topicData.weight),
-        duration: Number(topicData.duration),
-        status: topicData.status,
-        dayId: dayId,
-      };
-      createTopics(dataToSend);
-      topicForm.reset();
-    } else {
-      toast.error("ID do dia não encontrado. Por favor, crie o dia primeiro.");
-    }
-  };
-
-  return {
-    schedule,
-    isLoadingSchedule,
-    isErrorSchedule,
-    errorSchedule,
-    today,
-    scrollContainerRef,
-    todayCardRef,
-    daysInMonth,
-    daysInAYear,
-    currentDayDisciplines,
-    progress,
-    toggleDiscipline: mutateStatusTopic,
-    topicForm,
-    dayForm,
-    scheduleForm,
-    step,
-    setStep,
-    submitDay,
-    submitTopic,
-    selectedDay,
-    hoursPerDay,
-    setSelectedDay,
-  };
-};
-
-const weeakDaysFull = [
-  "Domingo",
-  "Segunda",
-  "Terça",
-  "Quarta",
-  "Quinta",
-  "Sexta",
-  "Sábado",
-];
-const weeakDaysShort = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-const hoursPerDay = Array.from(
-  { length: 24 },
-  (_, i) => `${i.toString().padStart(2, "0")}:00`
-);
-
-type MyFile = {
-  type: string;
-  size: number;
-  lastModified: number;
-  webkitRelativePath: string;
-  // add other required properties here
-};
-
-export const useNewScheduleViewModel = () => {
-  const [step, setStep] = useState(1);
-
   const handleNextStep = async () => {
     // Valida apenas os campos do passo atual
     let isValid = false;
@@ -551,6 +284,33 @@ export const useNewScheduleViewModel = () => {
       setStep(step + 1);
     }
   };
+
+  const handlePreviousStep = () => {
+    if (step === 1) {
+      return;
+    } else {
+      setStep(step - 1);
+    }
+  };
+
+  const handleWeekdayToggle = (day: string) => {
+    const currentWeekdays = form.getValues("selectedWeekdays");
+    if (currentWeekdays.includes(day)) {
+      form.setValue(
+        "selectedWeekdays",
+        currentWeekdays.filter((d) => d !== day),
+        { shouldValidate: true } // Para revalidar o campo
+      );
+    } else {
+      form.setValue("selectedWeekdays", [...currentWeekdays, day], {
+        shouldValidate: true,
+      });
+    }
+  };
+
+  // ======================
+  // FORMS
+  // ======================
 
   const form = useForm<NewScheduleFormData>({
     resolver: zodResolver(newScheduleFormSchema),
@@ -577,20 +337,59 @@ export const useNewScheduleViewModel = () => {
     },
   });
 
-  // Estado para controlar a tab ativa (você pode passá-la para o onSubmit)
-  const [currentTab, setCurrentTab] = useState<"manual" | "ia">("manual");
-  const handleWeekdayToggle = (day: string) => {
-    const currentWeekdays = form.getValues("selectedWeekdays");
-    if (currentWeekdays.includes(day)) {
-      form.setValue(
-        "selectedWeekdays",
-        currentWeekdays.filter((d) => d !== day),
-        { shouldValidate: true } // Para revalidar o campo
-      );
+  const scheduleForm = useForm<ScheduleFormData>({
+    resolver: zodResolver(scheduleFormSchema),
+    defaultValues: {
+      name: "",
+      testDay: new Date(),
+      studyStartDate: new Date(),
+      studyEndDate: new Date(),
+      days: [],
+    },
+  });
+
+  const dayForm = useForm<DaysFormData>({
+    resolver: zodResolver(daysFormSchema),
+    defaultValues: {
+      date: selectedDay,
+      startTime: "",
+      endTime: "",
+      topics: [],
+    },
+  });
+
+  const submitDay = async (data: DaysFormData, scheduleId: string) => {
+    if (currentDayId !== undefined) {
+      toast.error("Dia já cadastrado.");
+      setStep(2);
+      return;
+    }
+    createDay({ scheduleId, data });
+    dayForm.reset();
+  };
+
+  const topicForm = useForm<TopicsFormData>({
+    resolver: zodResolver(topicsFormSchema),
+    defaultValues: {
+      name: "",
+      weight: 0,
+      duration: 0,
+      status: false,
+    },
+  });
+
+  const submitTopic = (topicData: TopicsFormData) => {
+    if (dayId !== undefined) {
+      const data = {
+        name: topicData.name,
+        weight: Number(topicData.weight),
+        duration: Number(topicData.duration),
+        status: topicData.status,
+      };
+      createTopic({ dayId, data });
+      topicForm.reset();
     } else {
-      form.setValue("selectedWeekdays", [...currentWeekdays, day], {
-        shouldValidate: true,
-      });
+      toast.error("ID do dia não encontrado. Por favor, crie o dia primeiro.");
     }
   };
 
@@ -612,24 +411,6 @@ export const useNewScheduleViewModel = () => {
     (testDay && !isBefore(date, testDay)) || // Não pode ser após a data da prova
     (isPast(date) && !isSameDay(date, new Date())); // E também não pode ser no passado (exceto hoje)
 
-  const router = useRouter();
-
-  type Topic = {
-    name: string;
-    dayId: string;
-    weight: number;
-    duration: number;
-  };
-  type Days = {
-    date: Date;
-    scheduleId: string;
-    topics: Topic[];
-    endTime: string;
-    startTime: string;
-  };
-
-  const [loading, setLoading] = useState(false);
-  // Função onSubmit
   const onSubmit = async (data: NewScheduleFormData) => {
     const WEBHOOK_URL =
       "http://localhost:5677/webhook/aff2962c-c933-4487-8e47-b1ca7ea6ba6c";
@@ -669,22 +450,6 @@ export const useNewScheduleViewModel = () => {
         throw new Error("Erro ao criar agendamento.");
       } else {
       }
-
-      // try {
-      //   const newSchedule = await createSchedule(result[0]);
-
-      //   if (!newSchedule) {
-      //     toast.error("Erro ao criar agendamento.");
-      //     throw new Error("Erro ao criar agendamento.");
-      //   }
-
-      //   toast.success("Agendamento criado com sucesso!");
-
-      //   const id = newSchedule.id;
-      //   form.reset();
-      //   setLoading(false);
-      //   router.push(`/schedules/${id}`);
-      // } catch (error) {}
     } catch (error) {
       console.error("Erro ao enviar dados para o n8n:", error);
       toast.error("Erro ao enviar dados para o n8n.");
@@ -692,20 +457,52 @@ export const useNewScheduleViewModel = () => {
   };
 
   return {
-    form,
+    today,
+    searchTerm,
+    setSearchTerm,
+    filteredSchedules,
+    statusFilter,
+    setStatusFilter,
+    totalTopics,
+    checkedTopics,
+    selectedDay,
+    setSelectedDay,
+    step,
+    dayId,
+    setDayId,
+    schedule,
+    isScheduleLoading,
+    onFocus,
+    daysUntilExam,
+    getStatusText,
+    getStatusColor,
     hoursPerDay,
+    daysInMonth,
+    daysInAYear,
+    weeakDaysFull,
     weeakDaysShort,
+    scrollContainerRef,
+    todayCardRef,
+    progress,
+    disciplinePerDay,
+    currentDayDisciplines,
+    currentDayId,
+    handleNextStep,
+    handlePreviousStep,
     handleWeekdayToggle,
+    form,
+    selectedWeekdays: form.watch("selectedWeekdays"),
+    scheduleForm,
+    dayForm,
+    submitDay,
+    topicForm,
+    submitTopic,
+    studyStartTime,
+    studyEndTime,
     isDisabledTestDay,
     isDisabledStudyStartDate,
     isDisabledStudyEndDate,
     onSubmit,
-    selectedWeekdays: form.watch("selectedWeekdays"), // Passe o watch aqui para re-renderizar
-    currentTab, // Exponha o estado da tab
-    setCurrentTab, // Exponha a função para mudar a tab
-    step,
-    setStep,
-    handleNextStep,
-    loading,
+    toggleStatusTopic,
   };
 };
