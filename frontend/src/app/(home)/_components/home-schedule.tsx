@@ -8,8 +8,7 @@ import { Checkbox } from "@/_components/ui/checkbox";
 import { Label } from "@/_components/ui/label";
 import { Skeleton } from "@/_components/ui/skeleton";
 import { cn } from "@/_lib/utils";
-import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
-import { se } from "date-fns/locale";
+import { useSchedule } from "@/_viewmodels/useSchedule";
 import { PenBoxIcon, Trash2Icon } from "lucide-react";
 
 const HomeSchedule = () => {
@@ -17,14 +16,14 @@ const HomeSchedule = () => {
     onFocus: schedule,
     isScheduleLoading,
     selectedDay,
-    currentDayDisciplines,
     setSelectedDay,
+    disciplinePerDay,
+    currentDayDisciplines,
+    toggleStatusTopic,
   } = useSchedule();
 
-  const { toggleDiscipline } = useDetailsSchedule({
-    selectedDay,
-    setSelectedDay,
-  });
+  console.log(disciplinePerDay, "disciplinePerDay");
+  console.log(currentDayDisciplines);
 
   if (isScheduleLoading)
     return (
@@ -65,9 +64,8 @@ const HomeSchedule = () => {
                     className="h-6 w-6 rounded-md border-border data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" // Estilo do checkbox
                     checked={topic.status}
                     onCheckedChange={() =>
-                      toggleDiscipline({
+                      toggleStatusTopic({
                         topicId: topic.id,
-                        scheduleId: schedule!.id,
                       })
                     }
                   />
@@ -113,10 +111,7 @@ const HomeSchedule = () => {
               </div>
             </Card>
           ))}
-          <AddTopicButton
-            selectedDay={selectedDay}
-            setSelectedDay={setSelectedDay}
-          />
+          <AddTopicButton />
         </div>
       ) : (
         <div className="flex flex-col gap-2">
@@ -128,10 +123,7 @@ const HomeSchedule = () => {
               Que tal um descanso merecido ou revisar algo por conta própria?
             </p>
           </Card>
-          <AddTopicButton
-            selectedDay={selectedDay}
-            setSelectedDay={setSelectedDay}
-          />
+          <AddTopicButton />
         </div>
       )}
     </>
