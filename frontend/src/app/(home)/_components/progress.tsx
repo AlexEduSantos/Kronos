@@ -5,7 +5,7 @@ import { Skeleton } from "@/_components/ui/skeleton";
 import { useSchedule } from "@/_viewmodels/useSchedule";
 
 const ScheduleProgress = () => {
-  const { onFocus: schedule, isScheduleLoading } = useSchedule();
+  const { onFocus: schedule, isScheduleLoading, progress } = useSchedule();
 
   if (isScheduleLoading)
     return (
@@ -20,13 +20,13 @@ const ScheduleProgress = () => {
           <h2 className="text-xl font-bold">Progresso atual</h2>
           <p
             className={`text-lg font-semibold ${
-              schedule.progress >= 100 ? "text-accent" : "text-muted-foreground"
+              progress >= 100 ? "text-accent" : "text-muted-foreground"
             }`}
           >
-            {schedule.progress}%
+            {progress}%
           </p>
         </div>
-        <Progress value={schedule.progress} />
+        <Progress value={progress} />
       </CardContent>
     </Card>
   );
