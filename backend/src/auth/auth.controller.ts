@@ -62,7 +62,8 @@ export class AuthController {
 
   @UseGuards(SessionGuard)
   @Get('profile')
-  getProfile(@Request() req: any) {
-    return req.user;
+  async getProfile(@Request() req: any) {
+    const user = await this.authService.getUserProfile(req.user.id);
+    return user;
   }
 }
