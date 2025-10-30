@@ -2,10 +2,16 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
+import { UserDto } from './dto/user.dto';
+import * as fs from 'fs/promises'; // Importe o módulo 'fs' promises
+import * as path from 'path';
+
+const UPLOAD_BASE_DIR = path.join(process.cwd(), 'public', 'uploads');
 
 @Injectable()
 export class AuthService {
@@ -50,8 +56,8 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        schedules: true
-      }
+        schedules: true,
+      },
     });
 
     if (!user) {
@@ -60,5 +66,36 @@ export class AuthService {
 
     const { password, ...result } = user;
     return result;
+  }
+
+  async updateUserProfile(userId: string, data: UserDto) {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: data,
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const { password, ...result } = user;
+    return result;
+  }
+
+  // Agora recebe o userId para também atualizar o registro do usuário no DB
+  async uploadAvatar(userId: string, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('Nenhum arquivo recebido');
+    }
+
+    const publicPath = `/uploads/${file.filename}`;
+
+    // Atualiza o campo avatar do usuário no banco
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { avatar: publicPath },
+    });
+
+    return publicPath;
   }
 }

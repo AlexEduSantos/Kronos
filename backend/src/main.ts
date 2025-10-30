@@ -3,6 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import * as express from 'express';
+import * as path from 'path';
 import { Pool } from 'pg';
 import * as createPgSession from 'connect-pg-simple';
 
@@ -48,6 +50,9 @@ async function bootstrap() {
 
   app.use(passport.initialize());
   app.use(passport.session());
+
+  // Serve uploaded images from the public/uploads folder at /uploads
+  app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
   await app.listen(3001);
 }
