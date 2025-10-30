@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { format } from "date-fns";
-import { useDetailsSchedule, useSchedule } from "@/_viewmodels/useSchedule";
+import { useSchedule } from "@/_viewmodels/useSchedule";
 import { Badge } from "./ui/badge";
 
 export type ScheduleCardProps = {
@@ -60,7 +60,7 @@ const ScheduleCard = ({ schedule }: { schedule: ScheduleCardProps }) => {
         <div className="w-full bg-background overflow-hidden py-1 rounded-full h-2 flex items-center justify-start">
           <div
             className="bg-gradient-to-r from-primary to-accent rounded-full h-2 transition-all duration-300"
-            style={{ width: `${schedule.progress}%`}}
+            style={{ width: `${schedule.progress}%` }}
           />
         </div>
       </div>
