@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "www.gravatar.com",
+        hostname: "localhost",
+
       },
     ],
   },
