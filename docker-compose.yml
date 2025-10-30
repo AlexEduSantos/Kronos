@@ -28,6 +28,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - storage:/usr/src/app/public/uploads
     depends_on:
       - db
     networks:
@@ -96,6 +97,7 @@ services:
 
 volumes:
   db_data:
+  storage:
   n8n-data:
   redis-data:
 
