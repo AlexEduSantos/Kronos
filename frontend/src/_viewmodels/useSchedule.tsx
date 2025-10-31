@@ -48,6 +48,20 @@ type Days = {
   startTime: string;
 };
 
+export type NewScheduleType = {
+  name: string;
+  position: string;
+  testDay: Date | undefined;
+  document: File;
+  studyStartTime: string;
+  studyEndTime: string;
+  studyDate: {
+    from: Date | undefined;
+    to?: Date | undefined;
+  };
+  selectedWeekdays: string[];
+};
+
 export const useSchedule = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredSchedules, setFilteredSchedules] = useState<
@@ -59,6 +73,16 @@ export const useSchedule = () => {
   const [selectedDay, setSelectedDay] = useState<Date>(new Date());
   const [step, setStep] = useState(1);
   const [dayId, setDayId] = useState<string | undefined>(undefined);
+  const [newSchedule, setNewSchedule] = useState<NewScheduleType>({
+    name: "",
+    position: "",
+    testDay: new Date(),
+    document: {} as File,
+    studyStartTime: "",
+    studyEndTime: "",
+    studyDate: { from: new Date(), to: new Date() },
+    selectedWeekdays: [],
+  } as NewScheduleType);
 
   // -------------- //
   //    QUERIES   //
@@ -456,6 +480,54 @@ export const useSchedule = () => {
     }
   };
 
+  // Submit usando o estado local `newSchedule` (útil quando o formulário foi removido)
+  const submitNewSchedule = async () => {
+    const data = newSchedule as NewScheduleType;
+    const WEBHOOK_URL =
+      "http://localhost:5677/webhook/aff2962c-c933-4487-8e47-b1ca7ea6ba6c";
+    try {
+      const formData = new FormData();
+
+      formData.append("name", data.name);
+      formData.append("position", data.position);
+      if (data.testDay) formData.append("testDay", data.testDay.toISOString());
+      if (data.studyDate?.from)
+        formData.append("studyRangeFrom", data.studyDate.from.toISOString());
+      if (data.studyDate?.to)
+        formData.append("studyRangeTo", data.studyDate.to.toISOString());
+      formData.append(
+        "selectedWeekdays",
+        JSON.stringify(data.selectedWeekdays || [])
+      );
+      formData.append("studyStartTime", data.studyStartTime || "");
+      formData.append("studyEndTime", data.studyEndTime || "");
+      if (data.document) formData.append("document", data.document);
+
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result) {
+        toast.error("Erro ao criar agendamento.");
+        throw new Error("Erro ao criar agendamento.");
+      } else {
+        toast.success("Agendamento enviado com sucesso.");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar dados para o n8n:", error);
+      toast.error("Erro ao enviar dados para o n8n.");
+    }
+  };
+
   return {
     today,
     searchTerm,
@@ -468,8 +540,11 @@ export const useSchedule = () => {
     selectedDay,
     setSelectedDay,
     step,
+    setStep,
     dayId,
     setDayId,
+    newSchedule,
+    setNewSchedule,
     schedule,
     isScheduleLoading,
     onFocus,
@@ -503,6 +578,7 @@ export const useSchedule = () => {
     isDisabledStudyStartDate,
     isDisabledStudyEndDate,
     onSubmit,
+    submitNewSchedule,
     toggleStatusTopic,
   };
 };
