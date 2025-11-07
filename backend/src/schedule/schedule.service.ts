@@ -16,9 +16,18 @@ import {
 export class ScheduleService {
   constructor(private prisma: PrismaService) {}
 
-  async getSchedule(userId: string) {
+  async getSchedule(userId: string, status: any) {
+    const whereCondition: any = {
+      userId: userId,
+    };
+
+    if (status) {
+      // Adiciona o filtro de status se ele for fornecido
+      whereCondition.status = status;
+    }
+    
     return this.prisma.schedule.findMany({
-      where: { userId },
+      where: whereCondition,
       orderBy: { testDay: 'desc' },
       include: {
         days: { include: { topics: true } },

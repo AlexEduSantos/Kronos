@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -30,9 +31,9 @@ export class ScheduleController {
   // Schedule
   // ======================
   @Get()
-  async getSchedule(@Request() req: any) {
+  async getSchedule(@Request() req: any, @Query('status') status: any) {
     const userId = req.user.id;
-    return this.scheduleService.getSchedule(userId);
+    return this.scheduleService.getSchedule(userId, status);
   }
 
   @Get(':scheduleId')
