@@ -37,7 +37,7 @@ const HomeCheck = () => {
     return (
       <>
         <ScheduleProgress />
-        {/* <StatisticCard /> */}
+        <StatisticCard />
         <HomeSchedule />
         <PomodoroTimer />
       </>

@@ -5,7 +5,11 @@ import { Skeleton } from "@/_components/ui/skeleton";
 import { useSchedule } from "@/_viewmodels/useSchedule";
 
 const ScheduleProgress = () => {
-  const { onFocus: schedule, isScheduleLoading, progress } = useSchedule();
+  const {
+    isScheduleLoading,
+    progressInFocus: progress,
+    focusSchedule,
+  } = useSchedule();
 
   if (isScheduleLoading)
     return (
@@ -13,6 +17,9 @@ const ScheduleProgress = () => {
         <Skeleton className="w-full h-16 bg-white" />
       </>
     );
+
+  if (progress !== null) return null;
+
   return (
     <Card className="p-0 w-full">
       <CardContent className="p-4 pt-2 flex flex-col gap-2">

@@ -117,11 +117,12 @@ export const useSchedule = () => {
   // Calcular quantidade de tópicos e tópicos completados
   useEffect(() => {
     // checar se existe algum schedule em focus
-    const inFocus = schedules.map((schedule: ScheduleCardProps) => {
+
+    const inFocus = schedules?.map((schedule: ScheduleCardProps) => {
       return schedule.status === "Focus";
     });
 
-    if (inFocus.includes(true)) {
+    if (focusSchedule === null || inFocus?.includes(false)) {
       setScheduleInFocus(true);
     } else {
       setTotalTopics(0);
@@ -146,13 +147,16 @@ export const useSchedule = () => {
 
   // Quantidade de dias até a prova
   const daysUntilExam = useMemo(() => {
-    if (focusSchedule) {
+    if (scheduleInFocus) {
+      const testDay = focusSchedule?.testDay;
       const today = new Date();
-      const examDate = new Date(focusSchedule.testDay);
+      const examDate = new Date(testDay as string);
       const daysUntilExam = Math.ceil(
         (examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
       );
       return daysUntilExam;
+    } else {
+      return 0;
     }
     return null;
   }, [focusSchedule]);
@@ -271,6 +275,28 @@ export const useSchedule = () => {
   const progress =
     disciplinesTotal && checkedTotal !== undefined
       ? Math.round((checkedTotal / disciplinesTotal) * 100)
+      : 0;
+
+  const disciplinesInFocusTotal = useMemo(() => {
+    if (scheduleInFocus) {
+      return focusSchedule?.days
+        .map((day) => day.topics.length)
+        .reduce((a, b) => a + b, 0);
+    }
+  }, [focusSchedule]);
+  const checkedInFocusTotal = useMemo(() => {
+    if (scheduleInFocus) {
+      return focusSchedule?.days
+        .map(
+          (day) => day.topics.filter((topic) => topic.status === true).length
+        )
+        .reduce((a, b) => a + b, 0);
+    }
+  }, [focusSchedule]);
+
+  const progressInFocus =
+    disciplinesInFocusTotal && checkedInFocusTotal !== undefined
+      ? Math.round((checkedInFocusTotal / disciplinesInFocusTotal) * 100)
       : 0;
 
   const disciplinePerDay = useMemo(() => {
@@ -593,5 +619,6 @@ export const useSchedule = () => {
     onSubmit,
     submitNewSchedule,
     toggleStatusTopic,
+    progressInFocus,
   };
 };
