@@ -4,9 +4,10 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import NewDayForm from "./new-day-form";
 import NewTopicForm from "./new-topic-form";
 import { useSchedule } from "@/_viewmodels/useSchedule";
+import Link from "next/link";
 
 const AddTopicButton = () => {
-  const { step } = useSchedule();
+  const { step, focusSchedule } = useSchedule();
 
   const teste = () => {
     if (step === 1) {
@@ -23,6 +24,18 @@ const AddTopicButton = () => {
       );
     }
   };
+
+  if (focusSchedule !== null) {
+    return (
+      <Link href="/new-schedule">
+        <Button className="shadow w-full">
+          <PlusIcon />
+          Adicionar Cronograma
+        </Button>
+      </Link>
+    );
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
