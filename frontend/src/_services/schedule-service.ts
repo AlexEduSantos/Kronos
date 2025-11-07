@@ -27,6 +27,30 @@ export async function getAllSchedules() {
   }
 }
 
+export async function getFocusSchedule() {
+  try {
+    const response = await fetch(apiRoute + "/schedule" + "?status=Focus", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error("Sessão expirada. Por favor, faça login novamente.");
+      }
+      if (response.status === 404) {
+        throw new Error("Nenhum cronograma encontrado.");
+      }
+      throw new Error("Falha ao buscar cronogramas do usuário.");
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error("Falha ao buscar cronogramas do usuário.");
+  }
+}
+
 export async function getScheduleById(scheduleId: string) {
   const response = await fetch(`${apiRoute}/schedule/${scheduleId}`, {
     method: "GET",

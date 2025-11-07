@@ -10,20 +10,18 @@ import { Skeleton } from "@/_components/ui/skeleton";
 import { cn } from "@/_lib/utils";
 import { useSchedule } from "@/_viewmodels/useSchedule";
 import { PenBoxIcon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
 
 const HomeSchedule = () => {
   const {
-    onFocus: schedule,
+    focusSchedule,
     isScheduleLoading,
     selectedDay,
     setSelectedDay,
-    disciplinePerDay,
     currentDayDisciplines,
     toggleStatusTopic,
+    totalTopics,
   } = useSchedule();
-
-  console.log(disciplinePerDay, "disciplinePerDay");
-  console.log(currentDayDisciplines);
 
   if (isScheduleLoading)
     return (

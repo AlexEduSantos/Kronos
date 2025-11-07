@@ -34,7 +34,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-type Topic = {
+export type Topic = {
   name: string;
   dayId: string;
   weight: number;
@@ -68,6 +68,7 @@ export const useSchedule = () => {
     ScheduleCardProps[]
   >([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [scheduleInFocus, setScheduleInFocus] = useState<boolean>(false);
   const [totalTopics, setTotalTopics] = useState(0);
   const [checkedTopics, setCheckedTopics] = useState(0);
   const [selectedDay, setSelectedDay] = useState<Date>(new Date());
@@ -88,6 +89,12 @@ export const useSchedule = () => {
   //    QUERIES   //
   // -------------- //
   const { schedules } = useSchedulesQuery();
+  const {
+    focusSchedule,
+    isFocusScheduleLoading,
+    isFocusScheduleError,
+    focusScheduleError,
+  } = useSchedulesQuery();
   const { createTopicMutation, createDayMutation, toggleStatusTopicMutation } =
     useScheduleMutations();
 
@@ -107,42 +114,48 @@ export const useSchedule = () => {
   const today = new Date();
   const { schedule, isScheduleLoading } = useScheduleQuery(id);
 
-  const onFocus = schedules?.find(
-    (schedule: ScheduleCardProps) => schedule.status === "Active"
-  );
-
   // Calcular quantidade de tópicos e tópicos completados
   useEffect(() => {
-    if (!onFocus) {
+    // checar se existe algum schedule em focus
+    const inFocus = schedules.map((schedule: ScheduleCardProps) => {
+      return schedule.status === "Focus";
+    });
+
+    if (inFocus.includes(true)) {
+      setScheduleInFocus(true);
+    } else {
       setTotalTopics(0);
       setCheckedTopics(0);
       return;
     }
 
-    const allTopics = onFocus.days
-      .flatMap((day: any) => day.topics || [])
-      .filter(Boolean);
+    const days = focusSchedule?.days ?? [];
 
-    const calculatedCheckedTopics = allTopics.filter(
-      (topic: any) => topic.status === true
-    ).length;
+    const totalTopics = days
+      .map((day) => day.topics.length)
+      .reduce((a, b) => a + b, 0);
 
-    setTotalTopics(allTopics.length);
-    setCheckedTopics(calculatedCheckedTopics);
-  }, [onFocus]);
+    setTotalTopics(totalTopics);
+
+    const checkedTopics = days
+      .map((day) => day.topics.filter((topic) => topic.status).length)
+      .reduce((a, b) => a + b, 0);
+
+    setCheckedTopics(checkedTopics);
+  }, [focusSchedule]);
 
   // Quantidade de dias até a prova
   const daysUntilExam = useMemo(() => {
-    if (onFocus) {
+    if (focusSchedule) {
       const today = new Date();
-      const examDate = new Date(onFocus.testDay);
+      const examDate = new Date(focusSchedule.testDay);
       const daysUntilExam = Math.ceil(
         (examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
       );
       return daysUntilExam;
     }
     return null;
-  }, [onFocus]);
+  }, [focusSchedule]);
 
   // Pesquisa
   useEffect(() => {
@@ -547,7 +560,7 @@ export const useSchedule = () => {
     setNewSchedule,
     schedule,
     isScheduleLoading,
-    onFocus,
+    focusSchedule,
     daysUntilExam,
     getStatusText,
     getStatusColor,

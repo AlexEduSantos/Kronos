@@ -9,6 +9,7 @@ import {
   deleteTopic,
   getAllSchedules,
   getDayById,
+  getFocusSchedule,
   getScheduleById,
   getTopicById,
   toggleStatusTopic,
@@ -28,7 +29,27 @@ export const useSchedulesQuery = () => {
     queryKey: ["schedules"],
     queryFn: () => getAllSchedules(),
   });
-  return { schedules, isScheduleLoading, isScheduleError, scheduleError };
+
+  const {
+    data: focusSchedule,
+    isLoading: isFocusScheduleLoading,
+    isError: isFocusScheduleError,
+    error: focusScheduleError,
+  } = useQuery<ScheduleCardProps>({
+    queryKey: ["focusSchedule"],
+    queryFn: () => getFocusSchedule(),
+  });
+
+  return {
+    schedules,
+    isScheduleLoading,
+    isScheduleError,
+    scheduleError,
+    focusSchedule,
+    isFocusScheduleLoading,
+    isFocusScheduleError,
+    focusScheduleError,
+  };
 };
 
 export const useScheduleQuery = (id: string) => {
