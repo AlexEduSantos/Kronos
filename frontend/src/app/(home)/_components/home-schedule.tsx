@@ -11,19 +11,27 @@ import { cn } from "@/_lib/utils";
 import { useSchedule } from "@/_viewmodels/useSchedule";
 import { PenBoxIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
+import { useHomeSchedule } from "../_viewmodel/useHomeSchedule";
 
 const HomeSchedule = () => {
+  const { toggleStatusTopic } = useSchedule();
+
   const {
     focusSchedule,
-    isScheduleLoading,
+    isFocusScheduleLoading,
+    isFocusScheduleError,
+    focusScheduleError,
+    totalTopics,
+    checkedTopics,
     selectedDay,
     setSelectedDay,
+    daysUntilExam,
+    progressInFocus,
     currentDayDisciplines,
-    toggleStatusTopic,
-    totalTopics,
-  } = useSchedule();
+    currentDayId,
+  } = useHomeSchedule();
 
-  if (isScheduleLoading)
+  if (isFocusScheduleLoading)
     return (
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex gap-2">

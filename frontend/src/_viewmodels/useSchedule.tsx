@@ -89,12 +89,7 @@ export const useSchedule = () => {
   //    QUERIES   //
   // -------------- //
   const { schedules } = useSchedulesQuery();
-  const {
-    focusSchedule,
-    isFocusScheduleLoading,
-    isFocusScheduleError,
-    focusScheduleError,
-  } = useSchedulesQuery();
+
   const { createTopicMutation, createDayMutation, toggleStatusTopicMutation } =
     useScheduleMutations();
 
@@ -113,53 +108,6 @@ export const useSchedule = () => {
   const id = pathname.split("/")[2];
   const today = new Date();
   const { schedule, isScheduleLoading } = useScheduleQuery(id);
-
-  // Calcular quantidade de tópicos e tópicos completados
-  useEffect(() => {
-    // checar se existe algum schedule em focus
-
-    const inFocus = schedules?.map((schedule: ScheduleCardProps) => {
-      return schedule.status === "Focus";
-    });
-
-    if (focusSchedule === null || inFocus?.includes(false)) {
-      setScheduleInFocus(true);
-    } else {
-      setTotalTopics(0);
-      setCheckedTopics(0);
-      return;
-    }
-
-    const days = focusSchedule?.days ?? [];
-
-    const totalTopics = days
-      .map((day) => day.topics.length)
-      .reduce((a, b) => a + b, 0);
-
-    setTotalTopics(totalTopics);
-
-    const checkedTopics = days
-      .map((day) => day.topics.filter((topic) => topic.status).length)
-      .reduce((a, b) => a + b, 0);
-
-    setCheckedTopics(checkedTopics);
-  }, [focusSchedule]);
-
-  // Quantidade de dias até a prova
-  const daysUntilExam = useMemo(() => {
-    if (scheduleInFocus) {
-      const testDay = focusSchedule?.testDay;
-      const today = new Date();
-      const examDate = new Date(testDay as string);
-      const daysUntilExam = Math.ceil(
-        (examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      return daysUntilExam;
-    } else {
-      return 0;
-    }
-    return null;
-  }, [focusSchedule]);
 
   // Pesquisa
   useEffect(() => {
@@ -275,28 +223,6 @@ export const useSchedule = () => {
   const progress =
     disciplinesTotal && checkedTotal !== undefined
       ? Math.round((checkedTotal / disciplinesTotal) * 100)
-      : 0;
-
-  const disciplinesInFocusTotal = useMemo(() => {
-    if (scheduleInFocus) {
-      return focusSchedule?.days
-        .map((day) => day.topics.length)
-        .reduce((a, b) => a + b, 0);
-    }
-  }, [focusSchedule]);
-  const checkedInFocusTotal = useMemo(() => {
-    if (scheduleInFocus) {
-      return focusSchedule?.days
-        .map(
-          (day) => day.topics.filter((topic) => topic.status === true).length
-        )
-        .reduce((a, b) => a + b, 0);
-    }
-  }, [focusSchedule]);
-
-  const progressInFocus =
-    disciplinesInFocusTotal && checkedInFocusTotal !== undefined
-      ? Math.round((checkedInFocusTotal / disciplinesInFocusTotal) * 100)
       : 0;
 
   const disciplinePerDay = useMemo(() => {
@@ -586,8 +512,6 @@ export const useSchedule = () => {
     setNewSchedule,
     schedule,
     isScheduleLoading,
-    focusSchedule,
-    daysUntilExam,
     getStatusText,
     getStatusColor,
     hoursPerDay,
@@ -619,6 +543,5 @@ export const useSchedule = () => {
     onSubmit,
     submitNewSchedule,
     toggleStatusTopic,
-    progressInFocus,
   };
 };
